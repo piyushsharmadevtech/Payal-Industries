@@ -1,11 +1,12 @@
-# Payal Industries — Website + Backend (Vercel ready)
+# Payal Industries — Website + Backend (Vercel Ready)
 
-Yeh project ab static HTML nahi hai — isme ek chhota **serverless backend** add ho gaya hai jo aapka data (products aur inquiries) ek real database me save karta hai, taaki:
-- Sab visitors ko same live catalog dikhe (sirf aapke browser tak limited nahi)
-- Admin panel se add/edit/delete karte hi data sab jagah update ho
-- Vercel par directly host kar sakein
+This project is no longer a static-only site. It now includes a lightweight **serverless backend** that stores your data (products and inquiries) in a real database, so that:
 
-## File structure
+- Every visitor sees the same live catalog — not just data stored in one browser
+- Adding, editing, or deleting a product in the admin panel updates the data everywhere instantly
+- The whole site can be deployed and hosted directly on Vercel
+
+## File Structure
 
 ```
 payal-industries/
@@ -13,12 +14,12 @@ payal-industries/
 ├── admin.html          → admin panel
 ├── package.json        → dependency (@vercel/kv)
 └── api/
-    ├── products.js     → GET/POST/PUT/DELETE products
-    ├── queries.js      → GET/POST/DELETE inquiries
+    ├── products.js     → GET / POST / PUT / DELETE products
+    ├── queries.js       → GET / POST / DELETE inquiries
     └── login.js        → admin login check
 ```
 
-## Step 1 — GitHub par push karein
+## Step 1 — Push to GitHub
 
 ```bash
 cd payal-industries
@@ -30,35 +31,36 @@ git remote add origin <your-github-repo-url>
 git push -u origin main
 ```
 
-## Step 2 — Vercel par import karein
+## Step 2 — Import into Vercel
 
-1. [vercel.com](https://vercel.com) par login karein (GitHub se)
-2. **Add New Project** → apna GitHub repo select karein → **Import**
-3. Framework preset: **Other** (kuch build step nahi chahiye, root me hi static files + `/api` hain)
-4. **Deploy** dabayein — pehli deploy bina database ke bhi chal jayegi, lekin products/queries save nahi honge jab tak Step 3 na karein.
+1. Sign in at [vercel.com](https://vercel.com) using your GitHub account.
+2. Click **Add New Project** → select your GitHub repository → **Import**.
+3. Framework preset: **Other** (no build step is required — the project is served as static files with serverless functions under `/api`).
+4. Click **Deploy**. The first deployment will succeed even without a database connected, but products and inquiries won't be saved until Step 3 is complete.
 
-## Step 3 — Database connect karein (Vercel KV)
+## Step 3 — Connect a Database (Vercel KV)
 
-1. Apne Vercel project ke dashboard me **Storage** tab kholen
-2. **Create Database** → **KV** (Redis-based, free tier available) select karein
-3. Database create hone ke baad, isko apne project se **Connect** karein
-4. Vercel automatically `KV_REST_API_URL` aur `KV_REST_API_TOKEN` environment variables set kar dega
-5. Project ko **Redeploy** karein (Deployments tab → ... → Redeploy)
+1. Open your Vercel project dashboard and go to the **Storage** tab.
+2. Click **Create Database** → select **KV** (Redis-based, free tier available).
+3. Once created, click **Connect** to link it to your project.
+4. Vercel will automatically set the `KV_REST_API_URL` and `KV_REST_API_TOKEN` environment variables.
+5. Redeploy the project (**Deployments** tab → **...** → **Redeploy**).
 
-Bas — ab `/api/products` aur `/api/queries` is database me data save/read karenge.
+Once this is done, `/api/products` and `/api/queries` will read from and write to this database.
 
-## Step 4 — Admin password set karein (recommended)
+## Step 4 — Set an Admin Password (Recommended)
 
-Abhi default login hai: `admin` / `payal123` (agar env variables set nahi hain).
-Production me apna khud ka password set karne ke liye:
+By default, the login credentials are `admin` / `payal123` (used only if no environment variables are set).
 
-1. Project → **Settings** → **Environment Variables**
-2. Add karein:
-   - `ADMIN_USERNAME` = aapka username
-   - `ADMIN_PASSWORD` = aapka strong password
-3. Redeploy karein
+To set your own credentials for production:
 
-## Local par test karna (optional)
+1. Go to **Project → Settings → Environment Variables**.
+2. Add:
+   - `ADMIN_USERNAME` = your preferred username
+   - `ADMIN_PASSWORD` = a strong password
+3. Redeploy the project.
+
+## Local Development (Optional)
 
 ```bash
 npm install -g vercel
@@ -66,10 +68,10 @@ npm install
 vercel dev
 ```
 
-Yeh `http://localhost:3000` par site chalayega, `/api/*` routes ke saath.
+This runs the site at `http://localhost:3000`, including the `/api/*` routes.
 
-## Important notes
+## Important Notes
 
-- **Images:** Admin panel me image ya to URL se ya gallery se upload hoti hai. Gallery upload base64 string ke roop me database me save hota hai — chhoti/medium images (~1-2MB tak) theek chalengi. Bahut badi images ke liye, better hai ki kisi image-hosting service (Cloudinary, ImageKit, ya simple URL) ka link paste karein, taaki database halka rahe.
-- **Security:** Admin login ab server-side check hota hai (`/api/login`), lekin yeh ek simple single-password system hai — bahut sensitive data ke liye production-grade auth (jaise NextAuth ya Clerk) consider karein.
-- **Data:** `products` aur `queries` Vercel KV me ek-ek key ke under JSON array ki tarah store hote hain — yeh chhote-medium catalogs (kuch sau products/inquiries) ke liye perfectly theek hai.
+- **Images:** The admin panel accepts either an image URL or a file upload from your gallery. Uploaded files are stored as base64 strings in the database — small to medium images (up to ~1–2MB) work fine. For larger images, it's better to use an image-hosting service (e.g. Cloudinary, ImageKit) and paste the resulting URL, to keep the database lightweight.
+- **Security:** Admin login is now verified server-side (`/api/login`), but this remains a simple single-password system. For handling sensitive data at scale, consider a production-grade authentication provider such as NextAuth or Clerk.
+- **Data:** `products` and `queries` are stored in Vercel KV as JSON arrays under a single key each — this is well suited for small to medium catalogs (a few hundred products or inquiries).
