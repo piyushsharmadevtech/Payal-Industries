@@ -83,6 +83,15 @@
   .theme-toggle{ width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s ease; flex:none; }
   .theme-toggle:hover{ border-color:var(--steel); color:var(--steel); }
 
+  .mobile-menu-toggle{ display:none; width:38px; height:38px; border-radius:7px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer; align-items:center; justify-content:center; font-size:16px; flex:none; }
+  .mobile-menu-toggle:hover{ border-color:var(--steel); color:var(--steel); }
+
+  .mobile-nav{ display:none; background:var(--surface); border-top:1px solid var(--line); }
+  .mobile-nav ul{ list-style:none; max-width:1240px; margin:0 auto; padding:8px 24px 16px; }
+  .mobile-nav a{ display:block; padding:13px 4px; color:var(--ink); text-decoration:none; font-weight:500; font-size:15.5px; border-bottom:1px solid var(--line); }
+  .mobile-nav li:last-child a{ border-bottom:none; color:var(--muted); font-size:14px; }
+  .mobile-nav.open{ display:block; }
+
   .btn{ font-family:var(--font-body); font-weight:600; border:none; cursor:pointer; border-radius:7px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:transform .2s ease, background .25s ease, box-shadow .25s ease; }
   .btn-primary{ background:var(--steel); color:#fff; padding:11px 20px; font-size:14.5px; }
   .btn-primary:hover{ background:var(--steel-dark); box-shadow:var(--shadow); }
@@ -220,9 +229,13 @@
 
   @media (max-width:880px){
     nav.main-nav{ display:none; }
+    .mobile-menu-toggle{ display:flex; }
     .nav-container{ flex-wrap:wrap; }
     .products-toolbar{ flex-direction:column; align-items:flex-start; }
     .search-box input{ width:100%; }
+  }
+  @media (max-width:560px){
+    #quote-btn-desktop{ display:none; }
   }
 </style>
 </head>
@@ -236,7 +249,7 @@
       <span class="mark"><i class="fa-solid fa-industry"></i></span>
       <div>
         Payal Industries
-        <span class="tag" data-i18n="logo_tag">EST. 1996 • Trusted Since 1996</span>
+        <span class="tag" data-i18n="logo_tag">EST. PLASTIC MOLDING</span>
       </div>
     </div>
 
@@ -258,9 +271,22 @@
       <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
         <i class="fa-solid fa-moon" id="theme-icon"></i>
       </button>
-      <a href="#contact" class="btn btn-primary"><span data-i18n="nav_quote_btn">Get a Quote</span></a>
+      <a href="#contact" class="btn btn-primary" id="quote-btn-desktop"><span data-i18n="nav_quote_btn">Get a Quote</span></a>
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Open menu">
+        <i class="fa-solid fa-bars" id="mobile-menu-icon"></i>
+      </button>
     </div>
   </div>
+
+  <nav class="mobile-nav" id="mobile-nav">
+    <ul>
+      <li><a href="#" data-i18n="nav_home" onclick="closeMobileMenu()">Home</a></li>
+      <li><a href="#products" data-i18n="nav_products" onclick="closeMobileMenu()">Our Products</a></li>
+      <li><a href="#process" data-i18n="nav_process" onclick="closeMobileMenu()">Process</a></li>
+      <li><a href="#contact" data-i18n="nav_contact" onclick="closeMobileMenu()">Contact Us</a></li>
+      <li><a href="admin.html"><i class="fa-solid fa-lock"></i> <span data-i18n="nav_admin">Admin</span></a></li>
+    </ul>
+  </nav>
 </header>
 
 <section class="hero">
@@ -283,7 +309,7 @@
           <span class="stat-label" data-i18n="hero_stat1_label">Years in plastic injection molding</span>
         </div>
         <div class="stat-item">
-          <span class="stat-num">100K+</span>
+          <span class="stat-num">50K+</span>
           <span class="stat-label" data-i18n="hero_stat2_label">Units shipped monthly to whiteboard brands</span>
         </div>
         <div class="stat-item">
@@ -457,7 +483,7 @@
 /* ====================== TRANSLATIONS ====================== */
 const translations = {
   en: {
-    logo_tag:"EST. PLASTIC MOLDING",
+    logo_tag:"EST.1996 - Trusted Since 1996",
     nav_home:"Home", nav_products:"Our Products", nav_process:"Process", nav_contact:"Contact Us", nav_admin:"Admin", nav_quote_btn:"Get a Quote",
     hero_eyebrow:"B2B MANUFACTURER · DELHI, INDIA",
     hero_title:'Precision-Molded Whiteboard Components, <span>Built to Your Spec.</span>',
@@ -568,6 +594,18 @@ function setLang(lang){
   document.getElementById('lang-hi').classList.toggle('active', lang==='hi');
   applyTranslations(lang);
   renderProducts();
+}
+
+/* ====================== MOBILE MENU ====================== */
+function toggleMobileMenu(){
+  const nav = document.getElementById('mobile-nav');
+  const icon = document.getElementById('mobile-menu-icon');
+  const isOpen = nav.classList.toggle('open');
+  icon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+}
+function closeMobileMenu(){
+  document.getElementById('mobile-nav').classList.remove('open');
+  document.getElementById('mobile-menu-icon').className = 'fa-solid fa-bars';
 }
 
 /* ====================== THEME ====================== */
