@@ -1,0 +1,9 @@
+{
+  "name": "payal-industries",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Payal Industries - B2B plastic whiteboard components storefront with Vercel serverless backend",
+  "dependencies": {
+    "@vercel/kv": "^1.0.1"
+  }
+}

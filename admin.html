@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payal Industries | Secure Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{
+            --font-display:'Space Grotesk', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+            --ink:#14213d; --steel:#2f5d78; --steel-dark:#1f4156; --safety:#ff5722;
+            --paper:#f3f4ef; --surface:#ffffff; --surface-2:#f8f9f5; --line:#dadfd6; --muted:#5b6770;
+            --shadow:0 10px 30px rgba(20,33,61,0.06); --radius:10px;
+        }
+        html[data-theme="dark"]{
+            --ink:#edefea; --steel:#6fb3e0; --steel-dark:#3a7ca5; --safety:#ff8255;
+            --paper:#0d1320; --surface:#141b29; --surface-2:#101725; --line:#283246; --muted:#93a1ac;
+            --shadow:0 10px 30px rgba(0,0,0,0.45);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-body); }
+        body { background: var(--paper); color: var(--ink); padding: 25px; transition: background .3s ease, color .3s ease; }
+        :focus-visible{ outline:2px solid var(--safety); outline-offset:2px; }
+
+        #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 76, 129, 0.4); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: var(--surface); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 380px; text-align: center; border:1px solid var(--line); }
+        .login-card h2{ font-family: var(--font-display); color: var(--ink); margin-bottom: 8px; }
+        .login-card input { width:100%; padding: 12px; margin-bottom: 15px; border:1px solid var(--line); border-radius:6px; background:var(--surface-2); color:var(--ink); outline:none; }
+        .login-card input:focus{ border-color: var(--steel); }
+        .btn-login { background: var(--steel); color:white; border:none; padding:12px; width:100%; border-radius:6px; font-weight:600; cursor:pointer; font-family:var(--font-body); }
+        .btn-login:hover{ background: var(--steel-dark); }
+
+        #dashboardContent { display: none; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); padding: 20px; border-radius: var(--radius); margin-bottom: 25px; box-shadow: var(--shadow); border:1px solid var(--line); flex-wrap:wrap; gap:12px; }
+        .admin-header h2{ font-family: var(--font-display); font-size:18px; color: var(--ink); }
+        .header-actions{ display:flex; align-items:center; gap:10px; }
+        .theme-toggle{ width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s ease; }
+        .theme-toggle:hover{ border-color:var(--steel); color:var(--steel); }
+        .btn-back { background: var(--muted); color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight:600; font-size:13.5px; }
+
+        .grid-container { display: grid; grid-template-columns: 1fr 1.3fr; gap: 25px; }
+        @media(max-width: 900px){ .grid-container { grid-template-columns: 1fr; } }
+
+        .card { background: var(--surface); padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 25px; border:1px solid var(--line); }
+        .card h2 { font-family: var(--font-display); font-size: 16.5px; margin-bottom: 15px; color: var(--steel); border-bottom: 2px solid var(--surface-2); padding-bottom: 10px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; color: var(--ink); }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 6px; outline: none; background: var(--surface-2); color: var(--ink); font-family: var(--font-body); }
+        .form-group input:focus, .form-group textarea:focus{ border-color: var(--steel); }
+
+        .image-selection-box { border: 1px solid var(--line); border-radius: 8px; padding: 15px; background: var(--surface-2); }
+        .tabs-divider { text-align: center; margin: 10px 0; font-size: 12px; font-weight: 600; color: var(--muted); font-family: var(--font-mono); }
+
+        .file-input-wrapper { position: relative; display: block; background: var(--surface); border: 2px dashed var(--line); padding: 12px; text-align: center; border-radius: 6px; cursor: pointer; }
+        .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+
+        .btn-add { background: var(--safety); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: 700; cursor: pointer; font-size:15px; font-family: var(--font-body); }
+        .btn-add:hover{ filter: brightness(1.06); }
+        .btn-cancel-edit { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); padding: 10px; width: 100%; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top:8px; display:none; font-family: var(--font-body); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink); }
+        th { background: var(--steel); color: white; font-family: var(--font-mono); font-size:11.5px; letter-spacing:.5px; text-transform:uppercase; }
+
+        .action-btn-group { display: flex; gap: 6px; }
+        .edit-btn { color: var(--steel); border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; padding: 6px 10px; border-radius: 4px; font-weight: 600; font-size:12.5px; }
+        .edit-btn:hover { border-color: var(--steel); }
+        .delete-btn { color: #ef4444; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; padding: 6px 10px; border-radius: 4px; font-weight: 600; font-size:12.5px; }
+        .delete-btn:hover { border-color: #ef4444; }
+
+        .img-preview { width: 50px; height: 40px; object-fit: cover; border-radius: 4px; background: var(--surface-2); }
+        #errMsg{ color:#ef4444; font-size:13px; margin:10px 0; display:none; }
+    </style>
+</head>
+<body>
+
+    <div id="loginOverlay">
+        <div class="login-card">
+            <h2><i class="fa-solid fa-lock"></i> Payal Admin Access</h2>
+            <div id="errMsg">Invalid Password!</div>
+            <input type="text" id="username" placeholder="Username (admin)">
+            <input type="password" id="password" placeholder="Password (payal123)">
+            <button class="btn-login" onclick="validateLogin()">Login to Dashboard</button>
+        </div>
+    </div>
+
+    <div id="dashboardContent">
+        <div class="admin-header">
+            <h2><i class="fa-solid fa-screwdriver-wrench"></i> Payal Industries Admin Panel</h2>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                </button>
+                <button class="btn-back" style="border:none; cursor:pointer;" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> View Live Website</a>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <!-- Form Section (Handles Add & Edit) -->
+            <div>
+                <div class="card">
+                    <h2 id="form-title"><i class="fa-solid fa-plus"></i> Add New Custom Product</h2>
+                    <form id="productForm">
+                        <input type="hidden" id="edit_product_id" value="">
+
+                        <div class="form-group">
+                            <label>Product Name / Type Title</label>
+                            <input type="text" id="p_name" placeholder="e.g. Whiteboard Duster - Premium Red Elastic" required>
+                        </div>
+
+                        <!-- DUAL PHOTO CAPABILITY INTERFACE -->
+                        <div class="form-group">
+                            <label>Product Image Options</label>
+                            <div class="image-selection-box">
+                                <input type="url" id="p_url" placeholder="Option 1: Paste Direct Web Image Link (URL)" oninput="handleUrlInput(this.value)">
+                                <div class="tabs-divider">OR</div>
+                                <div class="file-input-wrapper">
+                                    <i class="fa-solid fa-image" style="color: var(--steel)"></i>
+                                    <span id="upload-status" style="font-size:12px; margin-left:5px;">Option 2: Choose from Gallery</span>
+                                    <input type="file" id="p_file" accept="image/*" onchange="handleGalleryUpload(this)">
+                                </div>
+                            </div>
+                            <div id="preview-container" style="display:none; align-items:center; gap:10px; margin-top:10px; background:var(--surface-2); padding:8px; border-radius:6px;">
+                                <img id="image-live-preview" src="" style="width:50px; height:45px; object-fit:cover; border-radius:4px;">
+                                <span style="font-size:12px; color:var(--safety); font-weight:600;"><i class="fa-solid fa-circle-check"></i> Image Loaded!</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Available Sizes</label>
+                            <input type="text" id="p_size" placeholder="e.g. 25mm Standard / Big Size Duster" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Available Colors</label>
+                            <input type="text" id="p_colors" placeholder="e.g. Royal Blue, Sky Blue, Custom" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Material Specifications</label>
+                            <input type="text" id="p_material" placeholder="e.g. Heavy ABS Plastic Body / High Density Felt" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Custom Description / Quality Highlights</label>
+                            <textarea id="p_desc" rows="3" placeholder="Write distinct qualities about this product type..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-add" id="btn-submit-text">Publish Product</button>
+                        <button type="button" class="btn-cancel-edit" id="btn-cancel" onclick="resetFormState()">Cancel Edit Mode</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Management Section -->
+            <div>
+                <div class="card">
+                    <h2><i class="fa-solid fa-boxes-stacked"></i> Live Dynamic Products</h2>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Image</th><th>Product details</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="admin-products-list"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fa-solid fa-envelope-open-text"></i> Client Bulk Inquiries</h2>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Client</th><th>Inquiry Details</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="query-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let finalImageSource = "";
+        let productsCache = [];
+
+        if (sessionStorage.getItem('payal_admin_authed') === '1') {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+            loadAdminData();
+        }
+
+        function setTheme(theme){
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if(icon) icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+        function toggleTheme(){
+            const current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        }
+        (function initTheme(){
+            const saved = localStorage.getItem('theme');
+            const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            setTheme(preferred);
+        })();
+
+        async function validateLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const loginBtn = document.querySelector('.btn-login');
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Checking...";
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    sessionStorage.setItem('payal_admin_authed', '1');
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    loadAdminData();
+                } else {
+                    document.getElementById('errMsg').style.display = 'block';
+                }
+            } catch (err) {
+                document.getElementById('errMsg').innerText = "Could not reach server. Please retry.";
+                document.getElementById('errMsg').style.display = 'block';
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Login to Dashboard";
+            }
+        }
+
+        function handleUrlInput(val) {
+            if(val.trim() !== "") {
+                finalImageSource = val.trim();
+                document.getElementById('image-live-preview').src = finalImageSource;
+                document.getElementById('preview-container').style.display = 'flex';
+                document.getElementById('p_file').value = ""; // Clear gallery file input
+                document.getElementById('upload-status').innerText = "Option 2: Choose from Gallery";
+            }
+        }
+
+        function handleGalleryUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    finalImageSource = e.target.result;
+                    document.getElementById('image-live-preview').src = finalImageSource;
+                    document.getElementById('preview-container').style.display = 'flex';
+                    document.getElementById('upload-status').innerText = "Gallery: " + file.name;
+                    document.getElementById('p_url').value = ""; // Clear url input
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function loadAdminData() {
+            // Load Inquiries
+            const qBody = document.getElementById('query-table-body');
+            qBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">Loading...</td></tr>';
+            try {
+                const qRes = await fetch('/api/queries');
+                const queries = qRes.ok ? await qRes.json() : [];
+                qBody.innerHTML = '';
+                if(queries.length === 0) {
+                    qBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">No inquires received.</td></tr>';
+                } else {
+                    queries.slice().reverse().forEach(q => {
+                        qBody.innerHTML += `<tr>
+                            <td><strong>${q.name}</strong><br><span style="color:var(--steel)">${q.phone}</span></td>
+                            <td><small><strong>Category:</strong> ${q.product}</small><br><p style="font-size:12px;margin-top:4px;">${q.message}</p></td>
+                            <td><button class="delete-btn" onclick="deleteQuery(${q.id})">Delete</button></td>
+                        </tr>`;
+                    });
+                }
+            } catch(err) {
+                qBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444">Could not load inquiries.</td></tr>';
+            }
+
+            // Load Products
+            const pBody = document.getElementById('admin-products-list');
+            pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">Loading...</td></tr>';
+            try {
+                const pRes = await fetch('/api/products');
+                productsCache = pRes.ok ? await pRes.json() : [];
+                pBody.innerHTML = '';
+                if(productsCache.length === 0) {
+                    pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">No products listed. Add above!</td></tr>';
+                } else {
+                    productsCache.forEach(p => {
+                        pBody.innerHTML += `<tr>
+                            <td><img class="img-preview" src="${p.image || 'https://placeholder.pics/svg/50'}" alt="img"></td>
+                            <td><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${p.size} | ${p.colors}</span></td>
+                            <td>
+                                <div class="action-btn-group">
+                                    <button class="edit-btn" onclick="startEditProduct(${p.id})"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                                    <button class="delete-btn" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            } catch(err) {
+                pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444">Could not load products.</td></tr>';
+            }
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if(!finalImageSource) {
+                alert("Please image URL paste karein ya Gallery se image file upload karein!");
+                return;
+            }
+
+            const submitBtn = document.getElementById('btn-submit-text');
+            const originalLabel = submitBtn.innerText;
+            submitBtn.innerText = "Saving...";
+
+            const editId = document.getElementById('edit_product_id').value;
+            const productData = {
+                name: document.getElementById('p_name').value,
+                size: document.getElementById('p_size').value,
+                colors: document.getElementById('p_colors').value,
+                material: document.getElementById('p_material').value,
+                description: document.getElementById('p_desc').value,
+                image: finalImageSource
+            };
+
+            try {
+                if(editId) {
+                    const res = await fetch(`/api/products?id=${editId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                    if(!res.ok) throw new Error('Update failed');
+                    alert("Product Successfully Update ho gaya hai!");
+                } else {
+                    const res = await fetch('/api/products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                    if(!res.ok) throw new Error('Create failed');
+                    alert("Naya Product Published aur Live ho gaya hai!");
+                }
+                resetFormState();
+                loadAdminData();
+            } catch(err) {
+                alert("Kuch error aaya, dobara try karein.");
+            } finally {
+                submitBtn.innerText = originalLabel;
+            }
+        });
+
+        window.startEditProduct = function(id) {
+            const item = productsCache.find(p => p.id == id);
+            if(item) {
+                document.getElementById('edit_product_id').value = item.id;
+                document.getElementById('p_name').value = item.name;
+                document.getElementById('p_size').value = item.size;
+                document.getElementById('p_colors').value = item.colors;
+                document.getElementById('p_material').value = item.material;
+                document.getElementById('p_desc').value = item.description;
+
+                finalImageSource = item.image;
+                document.getElementById('image-live-preview').src = finalImageSource;
+                document.getElementById('preview-container').style.display = 'flex';
+
+                if(item.image.startsWith('http')) {
+                    document.getElementById('p_url').value = item.image;
+                } else {
+                    document.getElementById('upload-status').innerText = "Gallery Image Loaded";
+                }
+
+                document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Mode: ${item.name}`;
+                document.getElementById('btn-submit-text').innerText = "Save Changes & Update Live";
+                document.getElementById('btn-cancel').style.display = "block";
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        window.resetFormState = function() {
+            document.getElementById('productForm').reset();
+            document.getElementById('edit_product_id').value = "";
+            finalImageSource = "";
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('upload-status').innerText = "Option 2: Choose from Gallery";
+            document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-plus"></i> Add New Custom Product`;
+            document.getElementById('btn-submit-text').innerText = "Publish Product";
+            document.getElementById('btn-cancel').style.display = "none";
+        };
+
+        window.deleteQuery = async function(id) {
+            try {
+                await fetch(`/api/queries?id=${id}`, { method: 'DELETE' });
+                loadAdminData();
+            } catch(err) {
+                alert("Delete nahi ho saka, dobara try karein.");
+            }
+        };
+
+        window.logoutAdmin = function() {
+            sessionStorage.removeItem('payal_admin_authed');
+            document.getElementById('dashboardContent').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        };
+
+        window.deleteProduct = async function(id) {
+            if(confirm('Kya aap is variant ko hatana chahte hain?')) {
+                try {
+                    await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+                    loadAdminData();
+                } catch(err) {
+                    alert("Delete nahi ho saka, dobara try karein.");
+                }
+            }
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payal Industries | Precision Plastic Whiteboard Components & Dusters</title>
+<meta name="description" content="Payal Industries — direct B2B manufacturer of custom plastic whiteboard corner joints and dusters. Factory-direct pricing, custom tooling, pan-India dispatch.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root{
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+
+    --ink:#14213d;
+    --steel:#2f5d78;
+    --steel-dark:#1f4156;
+    --safety:#ff5722;
+    --paper:#f3f4ef;
+    --surface:#ffffff;
+    --surface-2:#f8f9f5;
+    --line:#dadfd6;
+    --muted:#5b6770;
+    --shadow:0 10px 30px rgba(20,33,61,0.06);
+    --radius:10px;
+  }
+
+  html[data-theme="dark"]{
+    --ink:#edefea;
+    --steel:#6fb3e0;
+    --steel-dark:#3a7ca5;
+    --safety:#ff8255;
+    --paper:#0d1320;
+    --surface:#141b29;
+    --surface-2:#101725;
+    --line:#283246;
+    --muted:#93a1ac;
+    --shadow:0 10px 30px rgba(0,0,0,0.45);
+  }
+
+  html[data-lang="hi"]{
+    --font-display:'Hind', sans-serif;
+    --font-body:'Hind', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--font-body);
+    line-height:1.6; overflow-x:hidden; transition:background .35s ease, color .35s ease;
+  }
+  img{ max-width:100%; display:block; }
+  :focus-visible{ outline:2px solid var(--safety); outline-offset:2px; }
+  .mono{ font-family:var(--font-mono); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- Top hazard accent ---------- */
+  .accent-bar{ height:4px; width:100%; background:repeating-linear-gradient(45deg, var(--safety) 0 14px, transparent 14px 28px); opacity:.85; }
+
+  /* ---------- Header ---------- */
+  header{ background:var(--surface); position:sticky; top:0; z-index:1000; border-bottom:1px solid var(--line); }
+  .nav-container{ max-width:1240px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:16px 24px; gap:20px; }
+  .logo{ font-family:var(--font-display); font-size:21px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:10px; letter-spacing:.2px; white-space:nowrap; }
+  .logo .mark{ width:34px; height:34px; border-radius:7px; background:var(--steel); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; flex:none; }
+  .logo .tag{ display:block; font-family:var(--font-mono); font-size:10px; font-weight:500; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; }
+
+  nav.main-nav ul{ display:flex; list-style:none; gap:26px; }
+  nav.main-nav a{ text-decoration:none; color:var(--ink); font-weight:500; font-size:14.5px; transition:color .25s ease; position:relative; }
+  nav.main-nav a:hover{ color:var(--steel); }
+  nav.main-nav a.admin-link{ color:var(--muted); font-size:13px; }
+
+  .header-controls{ display:flex; align-items:center; gap:10px; }
+
+  .lang-toggle{ display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; font-family:var(--font-mono); font-size:12px; font-weight:600; }
+  .lang-toggle button{ border:none; background:transparent; color:var(--muted); padding:7px 12px; cursor:pointer; transition:all .2s ease; }
+  .lang-toggle button.active{ background:var(--steel); color:#fff; }
+
+  .theme-toggle{ width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s ease; flex:none; }
+  .theme-toggle:hover{ border-color:var(--steel); color:var(--steel); }
+
+  .btn{ font-family:var(--font-body); font-weight:600; border:none; cursor:pointer; border-radius:7px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:transform .2s ease, background .25s ease, box-shadow .25s ease; }
+  .btn-primary{ background:var(--steel); color:#fff; padding:11px 20px; font-size:14.5px; }
+  .btn-primary:hover{ background:var(--steel-dark); box-shadow:var(--shadow); }
+  .btn-accent{ background:var(--safety); color:#fff; padding:13px 24px; font-size:15px; }
+  .btn-accent:hover{ filter:brightness(1.08); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--line); padding:12px 22px; font-size:15px; }
+  .btn-ghost:hover{ border-color:var(--steel); color:var(--steel); }
+
+  /* ---------- Hero ---------- */
+  .hero{ position:relative; padding:88px 24px 70px; overflow:hidden; border-bottom:1px solid var(--line); }
+  .hero::before{
+    content:''; position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:42px 42px; opacity:.5; mask-image:radial-gradient(circle at 70% 30%, black 0%, transparent 70%);
+  }
+  .hero-inner{ position:relative; max-width:1240px; margin:0 auto; display:grid; grid-template-columns:1.15fr .85fr; gap:50px; align-items:center; }
+  .eyebrow{ font-family:var(--font-mono); font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--safety); font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:18px; }
+  .eyebrow::before{ content:''; width:18px; height:2px; background:var(--safety); display:inline-block; }
+  .hero h1{ font-family:var(--font-display); font-size:clamp(32px,4vw,48px); font-weight:700; line-height:1.12; color:var(--ink); margin-bottom:20px; letter-spacing:-.5px; }
+  .hero h1 span{ color:var(--steel); }
+  .hero p.lead{ font-size:17px; color:var(--muted); margin-bottom:32px; max-width:540px; }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  .spec-frame{ position:relative; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); padding:26px; }
+  .spec-frame::before, .spec-frame::after{ content:''; position:absolute; width:18px; height:18px; border-color:var(--safety); }
+  .spec-frame::before{ top:-1px; left:-1px; border-top:2px solid var(--safety); border-left:2px solid var(--safety); }
+  .spec-frame::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--safety); border-right:2px solid var(--safety); }
+  .spec-frame h3{ font-family:var(--font-mono); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
+  .stat-row{ display:flex; flex-direction:column; gap:18px; }
+  .stat-item{ display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px dashed var(--line); padding-bottom:14px; }
+  .stat-item:last-child{ border-bottom:none; padding-bottom:0; }
+  .stat-num{ font-family:var(--font-mono); font-size:26px; font-weight:600; color:var(--steel); }
+  .stat-label{ font-size:13px; color:var(--muted); text-align:right; max-width:160px; }
+
+  @media (max-width:880px){ .hero-inner{ grid-template-columns:1fr; } }
+
+  /* ---------- Section shell ---------- */
+  .section{ max-width:1240px; margin:0 auto; padding:90px 24px; }
+  .section-head{ max-width:640px; margin-bottom:48px; }
+  .section-head .eyebrow{ margin-bottom:14px; }
+  .section-head h2{ font-family:var(--font-display); font-size:clamp(26px,3vw,34px); font-weight:700; color:var(--ink); letter-spacing:-.3px; margin-bottom:12px; }
+  .section-head p{ color:var(--muted); font-size:15.5px; }
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ---------- Process ---------- */
+  .process-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  .process-step{ background:var(--surface); padding:30px 24px; border-right:1px solid var(--line); position:relative; }
+  .process-step:last-child{ border-right:none; }
+  .process-step .num{ font-family:var(--font-mono); font-size:13px; color:var(--safety); font-weight:600; display:block; margin-bottom:14px; }
+  .process-step h4{ font-family:var(--font-display); font-size:16.5px; font-weight:600; color:var(--ink); margin-bottom:8px; }
+  .process-step p{ font-size:13.5px; color:var(--muted); }
+  @media (max-width:880px){ .process-grid{ grid-template-columns:1fr; } .process-step{ border-right:none; border-bottom:1px solid var(--line); } .process-step:last-child{ border-bottom:none; } }
+
+  /* ---------- Products ---------- */
+  .products-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:30px; flex-wrap:wrap; }
+  .filter-tabs{ display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-tab{ font-family:var(--font-mono); font-size:12.5px; font-weight:600; padding:8px 16px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); cursor:pointer; transition:all .2s ease; }
+  .filter-tab.active{ background:var(--steel); color:#fff; border-color:var(--steel); }
+  .search-box{ position:relative; }
+  .search-box input{ font-family:var(--font-body); padding:9px 14px 9px 36px; border:1px solid var(--line); border-radius:7px; background:var(--surface); color:var(--ink); font-size:14px; width:220px; outline:none; }
+  .search-box input:focus{ border-color:var(--steel); }
+  .search-box i{ position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:13px; }
+
+  .products-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:26px; }
+  .product-card{ position:relative; background:var(--surface); border-radius:var(--radius); overflow:hidden; border:1px solid var(--line); transition:transform .3s ease, box-shadow .3s ease; }
+  .product-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow); }
+  .product-card::before, .product-card::after{ content:''; position:absolute; width:14px; height:14px; z-index:2; pointer-events:none; }
+  .product-card::before{ top:8px; left:8px; border-top:2px solid var(--safety); border-left:2px solid var(--safety); opacity:.85; }
+  .product-card::after{ bottom:8px; right:8px; border-bottom:2px solid var(--safety); border-right:2px solid var(--safety); opacity:.85; }
+  .product-img-wrap{ position:relative; height:210px; background:var(--surface-2); overflow:hidden; }
+  .product-img-wrap img{ width:100%; height:100%; object-fit:cover; }
+  .spec-tag{ position:absolute; top:10px; right:10px; background:rgba(20,33,61,0.82); color:#fff; font-family:var(--font-mono); font-size:10.5px; letter-spacing:1px; padding:4px 9px; border-radius:4px; }
+  .product-info{ padding:20px 20px 22px; }
+  .product-title{ font-family:var(--font-display); font-size:17.5px; font-weight:600; margin-bottom:8px; color:var(--ink); }
+  .product-desc{ color:var(--muted); font-size:13.5px; margin-bottom:16px; }
+  .specs-table{ width:100%; margin-bottom:16px; }
+  .specs-table .row{ display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .specs-table .row:last-child{ border-bottom:none; }
+  .specs-table .k{ color:var(--muted); font-weight:600; flex:none; }
+  .specs-table .v{ font-family:var(--font-mono); color:var(--ink); text-align:right; }
+  .btn-query-item{ display:block; text-align:center; background:var(--surface-2); color:var(--steel); text-decoration:none; padding:11px; border-radius:7px; font-weight:600; font-size:13.5px; transition:all .2s ease; border:1px solid var(--line); }
+  .btn-query-item:hover{ background:var(--steel); color:#fff; border-color:var(--steel); }
+  .no-products{ text-align:center; grid-column:1/-1; color:var(--muted); padding:60px 20px; border:1px dashed var(--line); border-radius:var(--radius); }
+  .no-products i{ font-size:36px; margin-bottom:14px; display:block; color:var(--line); }
+  .no-products strong{ display:block; font-size:16px; color:var(--ink); margin-bottom:6px; font-family:var(--font-display); }
+
+  /* ---------- Why us ---------- */
+  .why-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .why-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:26px 22px; }
+  .why-card i{ font-size:20px; color:var(--steel); margin-bottom:16px; display:block; }
+  .why-card h4{ font-family:var(--font-display); font-size:15.5px; font-weight:600; margin-bottom:8px; color:var(--ink); }
+  .why-card p{ font-size:13px; color:var(--muted); }
+  @media (max-width:880px){ .why-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:540px){ .why-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- Contact ---------- */
+  .contact-container{ display:grid; grid-template-columns:1.1fr .9fr; gap:40px; background:var(--surface); padding:42px; border-radius:var(--radius); border:1px solid var(--line); }
+  @media (max-width:880px){ .contact-container{ grid-template-columns:1fr; padding:28px; } }
+  .form-group{ margin-bottom:16px; }
+  .form-group label{ display:block; margin-bottom:6px; font-weight:600; font-size:13px; color:var(--ink); }
+  .form-group input, .form-group select, .form-group textarea{
+    width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:7px;
+    background:var(--surface-2); color:var(--ink); outline:none; font-family:var(--font-body); font-size:14px;
+    transition:border-color .2s ease;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus{ border-color:var(--steel); }
+  .btn-submit{ background:var(--safety); color:#fff; border:none; padding:13px; border-radius:7px; font-size:15px; font-weight:700; cursor:pointer; width:100%; font-family:var(--font-body); }
+  .btn-submit:hover{ filter:brightness(1.06); }
+  .contact-details-list{ list-style:none; }
+  .contact-details-list li{ display:flex; gap:14px; margin-bottom:20px; }
+  .contact-details-list i{ color:var(--steel); font-size:17px; margin-top:3px; width:18px; }
+  .contact-details-list strong{ display:block; font-size:13px; color:var(--muted); margin-bottom:2px; }
+  .map-frame{ border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:20px; height:160px; filter:grayscale(0.15); }
+  html[data-theme="dark"] .map-frame{ filter:grayscale(.4) invert(.92) hue-rotate(180deg); }
+  .map-frame iframe{ width:100%; height:100%; border:0; }
+
+  footer{ background:var(--ink); color:#dfe4ea; padding:46px 24px 26px; margin-top:0; }
+  .footer-inner{ max-width:1240px; margin:0 auto; display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; padding-bottom:26px; border-bottom:1px solid rgba(255,255,255,.12); }
+  .footer-brand{ font-family:var(--font-display); font-size:19px; font-weight:700; color:#fff; margin-bottom:10px; }
+  .footer-tagline{ font-size:13.5px; color:#b6bdc6; max-width:300px; }
+  .footer-links{ display:flex; gap:40px; flex-wrap:wrap; }
+  .footer-col h5{ font-family:var(--font-mono); font-size:11.5px; letter-spacing:1.5px; text-transform:uppercase; color:#8b94a0; margin-bottom:12px; }
+  .footer-col a{ display:block; color:#dfe4ea; text-decoration:none; font-size:13.5px; margin-bottom:8px; }
+  .footer-col a:hover{ color:var(--safety); }
+  .footer-bottom{ max-width:1240px; margin:20px auto 0; display:flex; justify-content:space-between; font-size:12.5px; color:#8b94a0; flex-wrap:wrap; gap:10px; }
+
+  /* ---------- Toast ---------- */
+  #toast-stack{ position:fixed; bottom:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
+  .toast{ background:var(--ink); color:#fff; padding:14px 18px; border-radius:8px; font-size:14px; box-shadow:0 8px 24px rgba(0,0,0,.25); display:flex; align-items:center; gap:10px; transform:translateX(120%); transition:transform .35s ease; max-width:320px; }
+  .toast.show{ transform:translateX(0); }
+  .toast i{ color:var(--safety); }
+
+  @media (max-width:880px){
+    nav.main-nav{ display:none; }
+    .nav-container{ flex-wrap:wrap; }
+    .products-toolbar{ flex-direction:column; align-items:flex-start; }
+    .search-box input{ width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="accent-bar"></div>
+
+<header>
+  <div class="nav-container">
+    <div class="logo">
+      <span class="mark"><i class="fa-solid fa-industry"></i></span>
+      <div>
+        Payal Industries
+        <span class="tag" data-i18n="logo_tag">EST. 1996 • Trusted Since 1996</span>
+      </div>
+    </div>
+
+    <nav class="main-nav">
+      <ul>
+        <li><a href="#" data-i18n="nav_home">Home</a></li>
+        <li><a href="#products" data-i18n="nav_products">Our Products</a></li>
+        <li><a href="#process" data-i18n="nav_process">Process</a></li>
+        <li><a href="#contact" data-i18n="nav_contact">Contact Us</a></li>
+        <li><a href="admin.html" class="admin-link"><i class="fa-solid fa-lock"></i> <span data-i18n="nav_admin">Admin</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="header-controls">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button id="lang-en" class="active" onclick="setLang('en')">EN</button>
+        <button id="lang-hi" onclick="setLang('hi')">हि</button>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <i class="fa-solid fa-moon" id="theme-icon"></i>
+      </button>
+      <a href="#contact" class="btn btn-primary"><span data-i18n="nav_quote_btn">Get a Quote</span></a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow" data-i18n="hero_eyebrow">B2B MANUFACTURER · DELHI, INDIA</div>
+      <h1 data-i18n="hero_title">Precision-Molded Whiteboard Components, <span>Built to Your Spec.</span></h1>
+      <p class="lead" data-i18n="hero_sub">Direct factory supply of custom plastic corner joints and dusters for whiteboard brands — exact sizes, exact colors, no middlemen.</p>
+      <div class="hero-ctas">
+        <a href="#products" class="btn btn-accent"><i class="fa-solid fa-layer-group"></i> <span data-i18n="hero_cta_catalog">View Live Catalog</span></a>
+        <a href="https://wa.me/919811071627" target="_blank" rel="noopener" class="btn btn-ghost"><i class="fa-brands fa-whatsapp"></i> <span data-i18n="hero_cta_whatsapp">Chat on WhatsApp</span></a>
+      </div>
+    </div>
+
+    <div class="spec-frame">
+      <h3 data-i18n="hero_spec_label">FACTORY SNAPSHOT</h3>
+      <div class="stat-row">
+        <div class="stat-item">
+          <span class="stat-num">30+</span>
+          <span class="stat-label" data-i18n="hero_stat1_label">Years in plastic injection molding</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">100K+</span>
+          <span class="stat-label" data-i18n="hero_stat2_label">Units shipped monthly to whiteboard brands</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">100%</span>
+          <span class="stat-label" data-i18n="hero_stat3_label">Custom tooling for size &amp; color match</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="process">
+  <div class="section-head reveal">
+    <div class="eyebrow" data-i18n="process_eyebrow">FROM ORDER TO DISPATCH</div>
+    <h2 data-i18n="process_title">How We Manufacture For You</h2>
+    <p data-i18n="process_sub">A direct, four-step production line — from your specification sheet to your warehouse.</p>
+  </div>
+  <div class="process-grid reveal">
+    <div class="process-step">
+      <span class="num mono">01</span>
+      <h4 data-i18n="process_1_title">Share Your Specs</h4>
+      <p data-i18n="process_1_desc">Send size, color and quantity requirements — by form, WhatsApp or call.</p>
+    </div>
+    <div class="process-step">
+      <span class="num mono">02</span>
+      <h4 data-i18n="process_2_title">Tooling &amp; Mold Setup</h4>
+      <p data-i18n="process_2_desc">Our die shop prepares or adjusts molds to match your exact dimensions.</p>
+    </div>
+    <div class="process-step">
+      <span class="num mono">03</span>
+      <h4 data-i18n="process_3_title">Molding &amp; QC</h4>
+      <p data-i18n="process_3_desc">Injection molding runs with batch-level quality and color checks.</p>
+    </div>
+    <div class="process-step">
+      <span class="num mono">04</span>
+      <h4 data-i18n="process_4_title">Pan-India Dispatch</h4>
+      <p data-i18n="process_4_desc">Packed and shipped directly from our Delhi factory to your location.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <div class="section-head reveal">
+    <div class="eyebrow" data-i18n="products_eyebrow">LIVE CATALOG</div>
+    <h2 data-i18n="products_title">Our Product Catalog</h2>
+    <p data-i18n="products_sub">All components manufactured to your custom order requirements.</p>
+  </div>
+
+  <div class="products-toolbar reveal">
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="filter-tab active" data-filter="all" data-i18n="filter_all">All</button>
+      <button class="filter-tab" data-filter="corners" data-i18n="filter_corners">Corners</button>
+      <button class="filter-tab" data-filter="dusters" data-i18n="filter_dusters">Dusters</button>
+      <button class="filter-tab" data-filter="custom" data-i18n="filter_custom">Custom</button>
+    </div>
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="product-search" data-i18n-placeholder="search_placeholder" placeholder="Search products...">
+    </div>
+  </div>
+
+  <div class="products-grid reveal" id="product-container"></div>
+</section>
+
+<section class="section" id="why-us">
+  <div class="section-head reveal">
+    <div class="eyebrow" data-i18n="why_eyebrow">WHY PAYAL INDUSTRIES</div>
+    <h2 data-i18n="why_title">Built for Brands That Order in Bulk</h2>
+  </div>
+  <div class="why-grid reveal">
+    <div class="why-card">
+      <i class="fa-solid fa-coins"></i>
+      <h4 data-i18n="why_1_title">Direct Factory Pricing</h4>
+      <p data-i18n="why_1_desc">No middlemen — order straight from the manufacturer.</p>
+    </div>
+    <div class="why-card">
+      <i class="fa-solid fa-palette"></i>
+      <h4 data-i18n="why_2_title">Custom Color &amp; Size Matching</h4>
+      <p data-i18n="why_2_desc">Tooled and tinted to your brand's exact specification.</p>
+    </div>
+    <div class="why-card">
+      <i class="fa-solid fa-boxes-stacked"></i>
+      <h4 data-i18n="why_3_title">Bulk Order Capacity</h4>
+      <p data-i18n="why_3_desc">Production lines built for high-volume B2B orders.</p>
+    </div>
+    <div class="why-card">
+      <i class="fa-solid fa-truck-fast"></i>
+      <h4 data-i18n="why_4_title">Pan-India Shipping</h4>
+      <p data-i18n="why_4_desc">Reliable dispatch to any state, tracked end to end.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <div class="section-head reveal">
+    <div class="eyebrow" data-i18n="contact_eyebrow">GET IN TOUCH</div>
+    <h2 data-i18n="contact_title">Send a Business Inquiry</h2>
+    <p data-i18n="contact_sub">Tell us your requirement — our team replies within one business day.</p>
+  </div>
+
+  <div class="contact-container reveal">
+    <div class="query-form">
+      <form id="inquiryForm">
+        <div class="form-group">
+          <label data-i18n="form_name">Your Name</label>
+          <input type="text" id="name" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_phone">Mobile / WhatsApp Number</label>
+          <input type="tel" id="phone" required pattern="[0-9+ ]{8,15}">
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_category">Select Product Category</label>
+          <select id="product">
+            <option value="Whiteboard Corners" data-i18n="form_cat_corners">Whiteboard Corner Joints (All Types)</option>
+            <option value="Whiteboard Dusters" data-i18n="form_cat_dusters">Whiteboard Dusters (All Types)</option>
+            <option value="Custom Injection Molding" data-i18n="form_cat_custom">Custom Design Components</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_message">Specific Requirements (Size, Color, Type, Quantity)</label>
+          <textarea id="message" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit" data-i18n="form_submit">Submit Requirements</button>
+      </form>
+    </div>
+
+    <div class="contact-info">
+      <ul class="contact-details-list">
+        <li><i class="fa-solid fa-location-dot"></i><div><strong data-i18n="office_factory_label">Factory</strong>Payal Industries, Khasra 434, Gali 3, Tukmirpur, Delhi - 110094</div></li>
+        <li><i class="fa-solid fa-phone-volume"></i><div><strong data-i18n="office_phone_label">Phone</strong>+91 98110 71627</div></li>
+        <li><i class="fa-solid fa-envelope"></i><div><strong data-i18n="office_email_label">Email</strong>info@payalindustries.com</div></li>
+        <li><i class="fa-solid fa-clock"></i><div><strong data-i18n="office_hours_label">Working Hours</strong><span data-i18n="office_hours_value">Mon–Sat, 9:30 AM – 7:00 PM</span></div></li>
+      </ul>
+      <div class="map-frame">
+        <iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=77.250%2C28.695%2C77.290%2C28.720&layer=mapnik" title="Factory location map"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Payal Industries</div>
+      <p class="footer-tagline" data-i18n="footer_tagline">Direct B2B manufacturer of custom plastic whiteboard components, supplying brands across India.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5 data-i18n="footer_quick_links">QUICK LINKS</h5>
+        <a href="#products" data-i18n="nav_products">Our Products</a>
+        <a href="#process" data-i18n="nav_process">Process</a>
+        <a href="#contact" data-i18n="nav_contact">Contact Us</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="office_factory_label">Factory</h5>
+        <a href="tel:+919811071627">+91 98110 71627</a>
+        <a href="mailto:info@payalindustries.com">info@payalindustries.com</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Payal Industries. <span data-i18n="footer_rights">All Rights Reserved.</span></span>
+    <span data-i18n="footer_made">Crafted for direct factory-to-brand supply.</span>
+  </div>
+</footer>
+
+<div id="toast-stack"></div>
+
+<script>
+/* ====================== TRANSLATIONS ====================== */
+const translations = {
+  en: {
+    logo_tag:"EST. PLASTIC MOLDING",
+    nav_home:"Home", nav_products:"Our Products", nav_process:"Process", nav_contact:"Contact Us", nav_admin:"Admin", nav_quote_btn:"Get a Quote",
+    hero_eyebrow:"B2B MANUFACTURER · DELHI, INDIA",
+    hero_title:'Precision-Molded Whiteboard Components, <span>Built to Your Spec.</span>',
+    hero_sub:"Direct factory supply of custom plastic corner joints and dusters for whiteboard brands — exact sizes, exact colors, no middlemen.",
+    hero_cta_catalog:"View Live Catalog", hero_cta_whatsapp:"Chat on WhatsApp",
+    hero_spec_label:"FACTORY SNAPSHOT",
+    hero_stat1_label:"Years in plastic injection molding",
+    hero_stat2_label:"Units shipped monthly to whiteboard brands",
+    hero_stat3_label:"Custom tooling for size & color match",
+    process_eyebrow:"FROM ORDER TO DISPATCH", process_title:"How We Manufacture For You",
+    process_sub:"A direct, four-step production line — from your specification sheet to your warehouse.",
+    process_1_title:"Share Your Specs", process_1_desc:"Send size, color and quantity requirements — by form, WhatsApp or call.",
+    process_2_title:"Tooling & Mold Setup", process_2_desc:"Our die shop prepares or adjusts molds to match your exact dimensions.",
+    process_3_title:"Molding & QC", process_3_desc:"Injection molding runs with batch-level quality and color checks.",
+    process_4_title:"Pan-India Dispatch", process_4_desc:"Packed and shipped directly from our Delhi factory to your location.",
+    products_eyebrow:"LIVE CATALOG", products_title:"Our Product Catalog",
+    products_sub:"All components manufactured to your custom order requirements.",
+    filter_all:"All", filter_corners:"Corners", filter_dusters:"Dusters", filter_custom:"Custom",
+    search_placeholder:"Search products...",
+    spec_sizes:"Sizes", spec_colors:"Colors", spec_material:"Material",
+    btn_get_quote:"Get Bulk Quote",
+    no_products_title:"No products live right now.",
+    no_products_desc:"Visit the Admin Panel to add custom corners or dusters.",
+    no_results:"No products match your search or filter.",
+    why_eyebrow:"WHY PAYAL INDUSTRIES", why_title:"Built for Brands That Order in Bulk",
+    why_1_title:"Direct Factory Pricing", why_1_desc:"No middlemen — order straight from the manufacturer.",
+    why_2_title:"Custom Color & Size Matching", why_2_desc:"Tooled and tinted to your brand's exact specification.",
+    why_3_title:"Bulk Order Capacity", why_3_desc:"Production lines built for high-volume B2B orders.",
+    why_4_title:"Pan-India Shipping", why_4_desc:"Reliable dispatch to any state, tracked end to end.",
+    contact_eyebrow:"GET IN TOUCH", contact_title:"Send a Business Inquiry",
+    contact_sub:"Tell us your requirement — our team replies within one business day.",
+    form_name:"Your Name", form_phone:"Mobile / WhatsApp Number", form_category:"Select Product Category",
+    form_message:"Specific Requirements (Size, Color, Type, Quantity)", form_submit:"Submit Requirements",
+    form_cat_corners:"Whiteboard Corner Joints (All Types)", form_cat_dusters:"Whiteboard Dusters (All Types)", form_cat_custom:"Custom Design Components",
+    office_factory_label:"Factory", office_phone_label:"Phone", office_email_label:"Email",
+    office_hours_label:"Working Hours", office_hours_value:"Mon–Sat, 9:30 AM – 7:00 PM",
+    footer_tagline:"Direct B2B manufacturer of custom plastic whiteboard components, supplying brands across India.",
+    footer_quick_links:"QUICK LINKS", footer_rights:"All Rights Reserved.", footer_made:"Crafted for direct factory-to-brand supply.",
+    toast_success:"Inquiry sent! Our team will contact you shortly.",
+    toast_error:"Something went wrong. Please try again."
+  },
+  hi: {
+    logo_tag:"स्थापितः 1996 - 1996 से विश्वसनीय",
+    nav_home:"होम", nav_products:"उत्पाद", nav_process:"प्रक्रिया", nav_contact:"संपर्क करें", nav_admin:"एडमिन", nav_quote_btn:"कोटेशन लें",
+    hero_eyebrow:"बी2बी निर्माता · दिल्ली, भारत",
+    hero_title:'सटीक माप वाले प्लास्टिक व्हाइटबोर्ड कंपोनेंट्स, <span>आपकी ज़रूरत के अनुसार।</span>',
+    hero_sub:"व्हाइटबोर्ड ब्रांड्स के लिए कस्टम कॉर्नर जॉइंट और डस्टर — सीधे फैक्ट्री से, सही साइज़ और सही रंग में, बिना किसी बिचौलिए के।",
+    hero_cta_catalog:"लाइव कैटलॉग देखें", hero_cta_whatsapp:"व्हाट्सएप पर बात करें",
+    hero_spec_label:"फैक्ट्री जानकारी",
+    hero_stat1_label:"वर्षों का प्लास्टिक इंजेक्शन मोल्डिंग अनुभव",
+    hero_stat2_label:"हर महीने ब्रांड्स को भेजी गई यूनिट्स",
+    hero_stat3_label:"साइज़ और रंग के अनुसार कस्टम टूलिंग",
+    process_eyebrow:"ऑर्डर से डिस्पैच तक", process_title:"हम आपके लिए उत्पादन कैसे करते हैं",
+    process_sub:"आपकी स्पेसिफिकेशन शीट से लेकर आपके गोदाम तक — एक सीधी, चार-चरणीय उत्पादन प्रक्रिया।",
+    process_1_title:"अपनी जानकारी भेजें", process_1_desc:"साइज़, रंग और मात्रा की जानकारी फॉर्म, व्हाट्सएप या कॉल के ज़रिए भेजें।",
+    process_2_title:"मोल्ड और टूलिंग सेटअप", process_2_desc:"हमारी डाई शॉप आपके सटीक माप के अनुसार मोल्ड तैयार करती है।",
+    process_3_title:"मोल्डिंग और गुणवत्ता जांच", process_3_desc:"इंजेक्शन मोल्डिंग के साथ हर बैच की गुणवत्ता और रंग की जांच की जाती है।",
+    process_4_title:"पूरे भारत में डिस्पैच", process_4_desc:"दिल्ली स्थित फैक्ट्री से सीधे आपके स्थान पर पैकिंग और शिपिंग की जाती है।",
+    products_eyebrow:"लाइव कैटलॉग", products_title:"हमारा उत्पाद कैटलॉग",
+    products_sub:"सभी कंपोनेंट्स आपकी कस्टम ऑर्डर ज़रूरतों के अनुसार बनाए जाते हैं।",
+    filter_all:"सभी", filter_corners:"कॉर्नर", filter_dusters:"डस्टर", filter_custom:"कस्टम",
+    search_placeholder:"उत्पाद खोजें...",
+    spec_sizes:"साइज़", spec_colors:"रंग", spec_material:"सामग्री",
+    btn_get_quote:"बल्क कोटेशन लें",
+    no_products_title:"अभी कोई उत्पाद लाइव नहीं है।",
+    no_products_desc:"कस्टम कॉर्नर या डस्टर जोड़ने के लिए एडमिन पैनल पर जाएं।",
+    no_results:"आपकी खोज या फ़िल्टर से मेल खाने वाला कोई उत्पाद नहीं मिला।",
+    why_eyebrow:"क्यों पायल इंडस्ट्रीज़", why_title:"बल्क ऑर्डर करने वाले ब्रांड्स के लिए बनाया गया",
+    why_1_title:"सीधे फैक्ट्री से कीमत", why_1_desc:"कोई बिचौलिया नहीं — सीधे निर्माता से ऑर्डर करें।",
+    why_2_title:"कस्टम रंग और साइज़ मैचिंग", why_2_desc:"आपके ब्रांड की सटीक ज़रूरत के अनुसार ढाला और रंगा गया।",
+    why_3_title:"बल्क ऑर्डर क्षमता", why_3_desc:"बड़ी मात्रा के बी2बी ऑर्डर के लिए तैयार उत्पादन लाइनें।",
+    why_4_title:"पूरे भारत में शिपिंग", why_4_desc:"किसी भी राज्य में भरोसेमंद, ट्रैक की गई डिलीवरी।",
+    contact_eyebrow:"संपर्क करें", contact_title:"बिज़नेस इनक्वायरी भेजें",
+    contact_sub:"अपनी ज़रूरत बताएं — हमारी टीम एक कार्यदिवस के भीतर जवाब देगी।",
+    form_name:"आपका नाम", form_phone:"मोबाइल / व्हाट्सएप नंबर", form_category:"उत्पाद श्रेणी चुनें",
+    form_message:"विशिष्ट आवश्यकताएं (साइज़, रंग, प्रकार, मात्रा)", form_submit:"जानकारी भेजें",
+    form_cat_corners:"व्हाइटबोर्ड कॉर्नर जॉइंट (सभी प्रकार)", form_cat_dusters:"व्हाइटबोर्ड डस्टर (सभी प्रकार)", form_cat_custom:"कस्टम डिज़ाइन कंपोनेंट्स",
+    office_factory_label:"फैक्ट्री", office_phone_label:"फ़ोन", office_email_label:"ईमेल",
+    office_hours_label:"कार्य समय", office_hours_value:"सोम–शनि, सुबह 9:30 – शाम 7:00",
+    footer_tagline:"पूरे भारत में ब्रांड्स को सीधे सप्लाई करने वाला कस्टम प्लास्टिक व्हाइटबोर्ड कंपोनेंट निर्माता।",
+    footer_quick_links:"क्विक लिंक्स", footer_rights:"सर्वाधिकार सुरक्षित।", footer_made:"फैक्ट्री-टू-ब्रांड सीधी सप्लाई के लिए बनाया गया।",
+    toast_success:"इनक्वायरी भेज दी गई! हमारी टीम शीघ्र ही संपर्क करेगी।",
+    toast_error:"कुछ गड़बड़ हो गई। कृपया फिर से प्रयास करें।"
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'en';
+let currentFilter = 'all';
+let currentSearch = '';
+
+function applyTranslations(lang){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key] !== undefined){ el.innerHTML = translations[lang][key]; }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(translations[lang][key] !== undefined){ el.setAttribute('placeholder', translations[lang][key]); }
+  });
+}
+
+function setLang(lang){
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+  document.getElementById('lang-en').classList.toggle('active', lang==='en');
+  document.getElementById('lang-hi').classList.toggle('active', lang==='hi');
+  applyTranslations(lang);
+  renderProducts();
+}
+
+/* ====================== THEME ====================== */
+function setTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  document.getElementById('theme-icon').className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+}
+function toggleTheme(){
+  const current = document.documentElement.getAttribute('data-theme');
+  setTheme(current === 'dark' ? 'light' : 'dark');
+}
+(function initTheme(){
+  const saved = localStorage.getItem('theme');
+  const preferred = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(preferred);
+})();
+
+/* ====================== TOAST ====================== */
+function showToast(message, icon){
+  const stack = document.getElementById('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<i class="fa-solid ${icon || 'fa-circle-check'}"></i><span>${message}</span>`;
+  stack.appendChild(el);
+  requestAnimationFrame(()=> el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=> el.remove(), 350);
+  }, 3800);
+}
+
+/* ====================== PRODUCT CATEGORY HELPER ====================== */
+function categoryOf(name){
+  const n = (name || '').toLowerCase();
+  if(n.includes('corner')) return 'corners';
+  if(n.includes('duster')) return 'dusters';
+  return 'custom';
+}
+
+/* ====================== PRODUCTS ====================== */
+let allProducts = [];
+
+async function fetchProducts(){
+  try{
+    const res = await fetch('/api/products');
+    if(!res.ok) throw new Error('Failed to load products');
+    allProducts = await res.json();
+  }catch(err){
+    console.error(err);
+    allProducts = [];
+  }
+  renderProducts();
+}
+
+function renderProducts(){
+  const t = translations[currentLang];
+  const all = allProducts;
+  const wrapper = document.getElementById('product-container');
+
+  const filtered = all.filter(item=>{
+    const matchesFilter = currentFilter === 'all' || categoryOf(item.name) === currentFilter;
+    const matchesSearch = !currentSearch || (item.name || '').toLowerCase().includes(currentSearch) || (item.description || '').toLowerCase().includes(currentSearch);
+    return matchesFilter && matchesSearch;
+  });
+
+  wrapper.innerHTML = '';
+
+  if(all.length === 0){
+    wrapper.innerHTML = `<div class="no-products">
+      <i class="fa-solid fa-boxes-open"></i>
+      <strong>${t.no_products_title}</strong>
+      ${t.no_products_desc}
+    </div>`;
+    return;
+  }
+
+  if(filtered.length === 0){
+    wrapper.innerHTML = `<div class="no-products">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <strong>${t.no_results}</strong>
+    </div>`;
+    return;
+  }
+
+  filtered.forEach((item, idx)=>{
+    const cat = categoryOf(item.name);
+    wrapper.innerHTML += `
+      <div class="product-card">
+        <div class="product-img-wrap">
+          <img src="${item.image || 'https://placeholder.pics/svg/300x200'}" alt="${item.name}">
+          <span class="spec-tag mono">SPEC-${String(idx+1).padStart(3,'0')}</span>
+        </div>
+        <div class="product-info">
+          <div class="product-title">${item.name}</div>
+          <p class="product-desc">${item.description || ''}</p>
+          <div class="specs-table">
+            <div class="row"><span class="k">${t.spec_sizes}</span><span class="v">${item.size || '—'}</span></div>
+            <div class="row"><span class="k">${t.spec_colors}</span><span class="v">${item.colors || '—'}</span></div>
+            <div class="row"><span class="k">${t.spec_material}</span><span class="v">${item.material || '—'}</span></div>
+          </div>
+          <a href="#contact" class="btn-query-item" onclick="selectProduct('${(item.name||'').replace(/'/g,"\\'")}')">${t.btn_get_quote}</a>
+        </div>
+      </div>`;
+  });
+}
+
+function selectProduct(name){
+  const dropdown = document.getElementById('product');
+  const cat = categoryOf(name);
+  if(cat === 'corners') dropdown.value = "Whiteboard Corners";
+  else if(cat === 'dusters') dropdown.value = "Whiteboard Dusters";
+  else dropdown.value = "Custom Injection Molding";
+}
+
+/* Filter tabs */
+document.getElementById('filter-tabs').addEventListener('click', function(e){
+  const btn = e.target.closest('.filter-tab');
+  if(!btn) return;
+  document.querySelectorAll('.filter-tab').forEach(b=> b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.getAttribute('data-filter');
+  renderProducts();
+});
+
+/* Search */
+document.getElementById('product-search').addEventListener('input', function(e){
+  currentSearch = e.target.value.trim().toLowerCase();
+  renderProducts();
+});
+
+/* ====================== INQUIRY FORM ====================== */
+document.getElementById('inquiryForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const submitBtn = this.querySelector('.btn-submit');
+  const originalText = submitBtn.innerHTML;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  const payload = {
+    name: document.getElementById('name').value,
+    phone: document.getElementById('phone').value,
+    product: document.getElementById('product').value,
+    message: document.getElementById('message').value
+  };
+
+  try{
+    const res = await fetch('/api/queries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('Request failed');
+    showToast(translations[currentLang].toast_success);
+    this.reset();
+  }catch(err){
+    showToast(translations[currentLang].toast_error || 'Something went wrong. Please try again.', 'fa-circle-exclamation');
+  }finally{
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
+  }
+});
+
+/* ====================== SCROLL REVEAL ====================== */
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){ entry.target.classList.add('in'); revealObserver.unobserve(entry.target); }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el=> revealObserver.observe(el));
+
+/* ====================== INIT ====================== */
+window.onload = function(){
+  setLang(currentLang);
+  fetchProducts();
+};
+
+</script>
+</body>
+</html>
