@@ -1,7 +1,15 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_REST_URL;
+const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_REST_TOKEN;
+const kv = new Redis({ url, token });
 
 export default async function handler(req, res) {
   try {
+    if (!url || !token) {
+      return res.status(500).json({ error: 'Database not connected. Add a Redis/Upstash store from Vercel Storage and redeploy.' });
+    }
+
     if (req.method === 'GET') {
       const queries = (await kv.get('queries')) || [];
       return res.status(200).json(queries);
