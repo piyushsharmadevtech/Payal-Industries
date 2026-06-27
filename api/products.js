@@ -17,8 +17,11 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       const body = req.body || {};
-      if (!body.name || !body.image) {
-        return res.status(400).json({ error: 'name and image are required' });
+      const images = Array.isArray(body.images) && body.images.length
+        ? body.images
+        : (body.image ? [body.image] : []);
+      if (!body.name || images.length === 0) {
+        return res.status(400).json({ error: 'name and at least one image are required' });
       }
       const products = (await kv.get('products')) || [];
       const newProduct = {
@@ -28,7 +31,7 @@ export default async function handler(req, res) {
         colors: body.colors || '',
         material: body.material || '',
         description: body.description || '',
-        image: body.image || ''
+        images
       };
       products.push(newProduct);
       await kv.set('products', products);
@@ -39,6 +42,9 @@ export default async function handler(req, res) {
       const { id } = req.query;
       if (!id) return res.status(400).json({ error: 'id is required' });
       const body = req.body || {};
+      if (Array.isArray(body.images) && body.images.length === 0) {
+        return res.status(400).json({ error: 'at least one image is required' });
+      }
       let products = (await kv.get('products')) || [];
       let found = false;
       products = products.map(p => {
