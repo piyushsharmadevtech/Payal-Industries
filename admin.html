@@ -55,6 +55,16 @@
         .file-input-wrapper { position: relative; display: block; background: var(--surface); border: 2px dashed var(--line); padding: 12px; text-align: center; border-radius: 6px; cursor: pointer; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
+        .btn-add-img { background: var(--steel); color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size:13.5px; }
+        .btn-add-img:hover { background: var(--steel-dark); }
+
+        .image-gallery-preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .img-thumb-wrap { position: relative; width: 70px; height: 64px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+        .img-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .img-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; border: none; background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .img-thumb-remove:hover { background: #ef4444; }
+        .main-badge { position: absolute; bottom: 0; left: 0; right: 0; background: var(--safety); color: #fff; font-size: 9px; text-align: center; font-weight: 700; padding: 1px 0; }
+
         .btn-add { background: var(--safety); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: 700; cursor: pointer; font-size:15px; font-family: var(--font-body); }
         .btn-add:hover{ filter: brightness(1.06); }
         .btn-cancel-edit { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); padding: 10px; width: 100%; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top:8px; display:none; font-family: var(--font-body); }
@@ -79,8 +89,8 @@
         <div class="login-card">
             <h2><i class="fa-solid fa-lock"></i> Payal Admin Access</h2>
             <div id="errMsg">Invalid Password!</div>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="username" placeholder="Username (admin)">
+            <input type="password" id="password" placeholder="Password (payal123)">
             <button class="btn-login" onclick="validateLogin()">Login to Dashboard</button>
         </div>
     </div>
@@ -110,22 +120,23 @@
                             <input type="text" id="p_name" placeholder="e.g. Whiteboard Duster - Premium Red Elastic" required>
                         </div>
 
-                        <!-- DUAL PHOTO CAPABILITY INTERFACE -->
+                        <!-- MULTI-IMAGE GALLERY MANAGER -->
                         <div class="form-group">
-                            <label>Product Image Options</label>
+                            <label>Product Images (multiple allowed)</label>
                             <div class="image-selection-box">
-                                <input type="url" id="p_url" placeholder="Option 1: Paste Direct Web Image Link (URL)" oninput="handleUrlInput(this.value)">
+                                <div style="display:flex; gap:8px;">
+                                    <input type="url" id="p_url" placeholder="Paste Direct Web Image Link (URL)" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault(); addImageFromUrl();}">
+                                    <button type="button" class="btn-add-img" onclick="addImageFromUrl()">Add</button>
+                                </div>
                                 <div class="tabs-divider">OR</div>
                                 <div class="file-input-wrapper">
                                     <i class="fa-solid fa-image" style="color: var(--steel)"></i>
-                                    <span id="upload-status" style="font-size:12px; margin-left:5px;">Option 2: Choose from Gallery</span>
-                                    <input type="file" id="p_file" accept="image/*" onchange="handleGalleryUpload(this)">
+                                    <span style="font-size:12px; margin-left:5px;">Choose from Gallery (multiple files allowed)</span>
+                                    <input type="file" id="p_file" accept="image/*" multiple onchange="handleGalleryUpload(this)">
                                 </div>
                             </div>
-                            <div id="preview-container" style="display:none; align-items:center; gap:10px; margin-top:10px; background:var(--surface-2); padding:8px; border-radius:6px;">
-                                <img id="image-live-preview" src="" style="width:50px; height:45px; object-fit:cover; border-radius:4px;">
-                                <span style="font-size:12px; color:var(--safety); font-weight:600;"><i class="fa-solid fa-circle-check"></i> Image Loaded!</span>
-                            </div>
+                            <div id="image-gallery-preview" class="image-gallery-preview"></div>
+                            <p style="font-size:11px;color:var(--muted); margin-top:8px;">First image = main catalog thumbnail. Add 3+ photos from different angles to enable "drag to rotate" on the live site.</p>
                         </div>
 
                         <div class="form-group">
@@ -181,8 +192,35 @@
     </div>
 
     <script>
-        let finalImageSource = "";
+        let productImages = [];
         let productsCache = [];
+
+        function renderImageGalleryPreview() {
+            const wrap = document.getElementById('image-gallery-preview');
+            wrap.innerHTML = '';
+            productImages.forEach((src, idx) => {
+                wrap.innerHTML += `<div class="img-thumb-wrap">
+                    <img src="${src}" alt="image ${idx+1}">
+                    ${idx === 0 ? '<span class="main-badge">Main</span>' : ''}
+                    <button type="button" class="img-thumb-remove" onclick="removeProductImage(${idx})"><i class="fa-solid fa-xmark"></i></button>
+                </div>`;
+            });
+        }
+
+        window.removeProductImage = function(idx) {
+            productImages.splice(idx, 1);
+            renderImageGalleryPreview();
+        };
+
+        window.addImageFromUrl = function() {
+            const input = document.getElementById('p_url');
+            const val = input.value.trim();
+            if (val) {
+                productImages.push(val);
+                input.value = '';
+                renderImageGalleryPreview();
+            }
+        };
 
         if (sessionStorage.getItem('payal_admin_authed') === '1') {
             document.getElementById('loginOverlay').style.display = 'none';
@@ -236,29 +274,17 @@
             }
         }
 
-        function handleUrlInput(val) {
-            if(val.trim() !== "") {
-                finalImageSource = val.trim();
-                document.getElementById('image-live-preview').src = finalImageSource;
-                document.getElementById('preview-container').style.display = 'flex';
-                document.getElementById('p_file').value = ""; // Clear gallery file input
-                document.getElementById('upload-status').innerText = "Option 2: Choose from Gallery";
-            }
-        }
-
         function handleGalleryUpload(input) {
-            const file = input.files[0];
-            if (file) {
+            const files = Array.from(input.files || []);
+            files.forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    finalImageSource = e.target.result;
-                    document.getElementById('image-live-preview').src = finalImageSource;
-                    document.getElementById('preview-container').style.display = 'flex';
-                    document.getElementById('upload-status').innerText = "Gallery: " + file.name;
-                    document.getElementById('p_url').value = ""; // Clear url input
+                    productImages.push(e.target.result);
+                    renderImageGalleryPreview();
                 };
                 reader.readAsDataURL(file);
-            }
+            });
+            input.value = "";
         }
 
         async function loadAdminData() {
@@ -295,8 +321,10 @@
                     pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">No products listed. Add above!</td></tr>';
                 } else {
                     productsCache.forEach(p => {
+                        const thumb = (p.images && p.images.length) ? p.images[0] : (p.image || 'https://placeholder.pics/svg/50');
+                        const count = (p.images && p.images.length) ? p.images.length : (p.image ? 1 : 0);
                         pBody.innerHTML += `<tr>
-                            <td><img class="img-preview" src="${p.image || 'https://placeholder.pics/svg/50'}" alt="img"></td>
+                            <td><img class="img-preview" src="${thumb}" alt="img">${count > 1 ? `<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:3px;">${count} photos</div>` : ''}</td>
                             <td><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${p.size} | ${p.colors}</span></td>
                             <td>
                                 <div class="action-btn-group">
@@ -314,8 +342,8 @@
 
         document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            if(!finalImageSource) {
-                alert("Please image URL paste karein ya Gallery se image file upload karein!");
+            if(productImages.length === 0) {
+                alert("Kam se kam ek image add karein - URL paste karein ya Gallery se upload karein!");
                 return;
             }
 
@@ -330,7 +358,7 @@
                 colors: document.getElementById('p_colors').value,
                 material: document.getElementById('p_material').value,
                 description: document.getElementById('p_desc').value,
-                image: finalImageSource
+                images: productImages
             };
 
             try {
@@ -370,15 +398,8 @@
                 document.getElementById('p_material').value = item.material;
                 document.getElementById('p_desc').value = item.description;
 
-                finalImageSource = item.image;
-                document.getElementById('image-live-preview').src = finalImageSource;
-                document.getElementById('preview-container').style.display = 'flex';
-
-                if(item.image.startsWith('http')) {
-                    document.getElementById('p_url').value = item.image;
-                } else {
-                    document.getElementById('upload-status').innerText = "Gallery Image Loaded";
-                }
+                productImages = (item.images && item.images.length) ? [...item.images] : (item.image ? [item.image] : []);
+                renderImageGalleryPreview();
 
                 document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Mode: ${item.name}`;
                 document.getElementById('btn-submit-text').innerText = "Save Changes & Update Live";
@@ -390,9 +411,8 @@
         window.resetFormState = function() {
             document.getElementById('productForm').reset();
             document.getElementById('edit_product_id').value = "";
-            finalImageSource = "";
-            document.getElementById('preview-container').style.display = 'none';
-            document.getElementById('upload-status').innerText = "Option 2: Choose from Gallery";
+            productImages = [];
+            renderImageGalleryPreview();
             document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-plus"></i> Add New Custom Product`;
             document.getElementById('btn-submit-text').innerText = "Publish Product";
             document.getElementById('btn-cancel').style.display = "none";
