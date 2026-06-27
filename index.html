@@ -190,6 +190,31 @@
   @media (max-width:880px){ .why-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:540px){ .why-grid{ grid-template-columns:1fr; } }
 
+  .product-img-wrap{ cursor: zoom-in; }
+  .img-count-badge{ position:absolute; bottom:10px; left:10px; background:rgba(20,33,61,0.82); color:#fff; font-family:var(--font-mono); font-size:10.5px; padding:4px 9px; border-radius:4px; display:flex; align-items:center; gap:5px; z-index:2; }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox-overlay{ position:fixed; inset:0; background:rgba(8,12,20,0.92); z-index:10000; display:none; align-items:center; justify-content:center; flex-direction:column; padding:20px; }
+  .lightbox-overlay.open{ display:flex; }
+  .lightbox-close{ position:absolute; top:18px; right:18px; width:40px; height:40px; border-radius:50%; border:none; background:rgba(255,255,255,0.12); color:#fff; font-size:18px; cursor:pointer; z-index:2; }
+  .lightbox-close:hover{ background:rgba(255,255,255,0.25); }
+  .lightbox-title-bar{ position:absolute; top:22px; left:24px; color:#fff; display:flex; gap:14px; align-items:center; font-family:var(--font-display); font-size:15px; max-width:70%; }
+  .lightbox-title-bar .mono{ color:var(--safety); font-size:13px; flex:none; }
+  .lightbox-stage{ position:relative; max-width:90vw; max-height:72vh; display:flex; align-items:center; justify-content:center; overflow:hidden; touch-action:none; }
+  .lightbox-stage img{ max-width:90vw; max-height:72vh; object-fit:contain; cursor:zoom-in; transition:transform .15s ease; user-select:none; -webkit-user-drag:none; border-radius:6px; }
+  .lightbox-stage img.zoomed{ cursor:zoom-out; transition:none; }
+  .lightbox-hint{ position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.55); color:#fff; font-size:12px; padding:6px 12px; border-radius:999px; pointer-events:none; display:none; white-space:nowrap; }
+  .lightbox-arrow{ width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,255,255,0.12); color:#fff; font-size:18px; cursor:pointer; margin:0 16px; flex:none; }
+  .lightbox-arrow:hover{ background:rgba(255,255,255,0.25); }
+  .lightbox-dots{ display:flex; gap:6px; margin-top:18px; flex-wrap:wrap; max-width:80vw; justify-content:center; }
+  .lightbox-dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.3); }
+  .lightbox-dot.active{ background:var(--safety); }
+  @media (max-width:700px){
+    .lightbox-arrow{ display:none !important; }
+    .lightbox-title-bar{ max-width:60%; font-size:13px; }
+  }
+
+
   /* ---------- Contact ---------- */
   .contact-container{ display:grid; grid-template-columns:1.1fr .9fr; gap:40px; background:var(--surface); padding:42px; border-radius:var(--radius); border:1px solid var(--line); }
   @media (max-width:880px){ .contact-container{ grid-template-columns:1fr; padding:28px; } }
@@ -477,13 +502,28 @@
   </div>
 </footer>
 
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="if(event.target===this) closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  <div class="lightbox-title-bar">
+    <span id="lightbox-title"></span>
+    <span id="lightbox-counter" class="mono"></span>
+  </div>
+  <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" onclick="lightboxPrev()" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+  <div class="lightbox-stage">
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-hint" id="lightbox-hint"><i class="fa-solid fa-arrows-left-right"></i> Drag to rotate</div>
+  </div>
+  <button class="lightbox-arrow lightbox-next" id="lightbox-next" onclick="lightboxNext()" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+  <div class="lightbox-dots" id="lightbox-dots"></div>
+</div>
+
 <div id="toast-stack"></div>
 
 <script>
 /* ====================== TRANSLATIONS ====================== */
 const translations = {
   en: {
-    logo_tag:"EST.1996 - Trusted Since 1996",
+    logo_tag:"EST. PLASTIC MOLDING",
     nav_home:"Home", nav_products:"Our Products", nav_process:"Process", nav_contact:"Contact Us", nav_admin:"Admin", nav_quote_btn:"Get a Quote",
     hero_eyebrow:"B2B MANUFACTURER · DELHI, INDIA",
     hero_title:'Precision-Molded Whiteboard Components, <span>Built to Your Spec.</span>',
@@ -526,7 +566,7 @@ const translations = {
     toast_error:"Something went wrong. Please try again."
   },
   hi: {
-    logo_tag:"स्थापितः 1996 - 1996 से विश्वसनीय",
+    logo_tag:"स्थापित — प्लास्टिक मोल्डिंग",
     nav_home:"होम", nav_products:"उत्पाद", nav_process:"प्रक्रिया", nav_contact:"संपर्क करें", nav_admin:"एडमिन", nav_quote_btn:"कोटेशन लें",
     hero_eyebrow:"बी2बी निर्माता · दिल्ली, भारत",
     hero_title:'सटीक माप वाले प्लास्टिक व्हाइटबोर्ड कंपोनेंट्स, <span>आपकी ज़रूरत के अनुसार।</span>',
@@ -596,6 +636,107 @@ function setLang(lang){
   renderProducts();
 }
 
+/* ====================== LIGHTBOX (zoom + multi-photo + drag-to-rotate) ====================== */
+let lightboxImages = [];
+let lightboxIndex = 0;
+let lightboxZoomed = false;
+let lightboxProductName = '';
+
+window.openLightbox = function(idx){
+  const item = (window.currentFilteredProducts || [])[idx];
+  if(!item) return;
+  lightboxImages = getProductImages(item);
+  lightboxIndex = 0;
+  lightboxZoomed = false;
+  lightboxProductName = item.name || '';
+  renderLightbox();
+  document.getElementById('lightbox-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeLightbox = function(){
+  document.getElementById('lightbox-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+function renderLightbox(){
+  const img = document.getElementById('lightbox-img');
+  img.src = lightboxImages[lightboxIndex];
+  img.classList.toggle('zoomed', lightboxZoomed);
+  img.style.transform = lightboxZoomed ? 'scale(2.2)' : 'scale(1)';
+  document.getElementById('lightbox-counter').textContent = (lightboxIndex+1) + ' / ' + lightboxImages.length;
+  document.getElementById('lightbox-title').textContent = lightboxProductName;
+  const multi = lightboxImages.length > 1;
+  document.getElementById('lightbox-prev').style.display = multi ? 'flex' : 'none';
+  document.getElementById('lightbox-next').style.display = multi ? 'flex' : 'none';
+  document.getElementById('lightbox-hint').style.display = (lightboxImages.length >= 3 && !lightboxZoomed) ? 'block' : 'none';
+  document.getElementById('lightbox-dots').innerHTML = multi
+    ? lightboxImages.map((_, i)=> `<span class="lightbox-dot ${i===lightboxIndex ? 'active' : ''}"></span>`).join('')
+    : '';
+}
+
+window.lightboxNext = function(){
+  lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+  lightboxZoomed = false;
+  renderLightbox();
+};
+window.lightboxPrev = function(){
+  lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+  lightboxZoomed = false;
+  renderLightbox();
+};
+
+(function initLightboxInteractions(){
+  let isPointerDown = false;
+  let dragMoved = false;
+  let dragStartX = 0, dragStartY = 0;
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const img = document.getElementById('lightbox-img');
+    if(!img) return;
+
+    img.addEventListener('pointerdown', e=>{
+      isPointerDown = true;
+      dragMoved = false;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      try{ img.setPointerCapture(e.pointerId); }catch(err){}
+    });
+
+    img.addEventListener('pointermove', e=>{
+      if(!isPointerDown) return;
+      const dx = e.clientX - dragStartX;
+      const dy = e.clientY - dragStartY;
+      if(Math.abs(dx) > 6 || Math.abs(dy) > 6) dragMoved = true;
+
+      if(lightboxZoomed){
+        img.style.transform = `scale(2.2) translate(${dx/2.2}px, ${dy/2.2}px)`;
+      } else if(lightboxImages.length > 1){
+        const threshold = 55;
+        if(dx > threshold){ lightboxPrev(); dragStartX = e.clientX; }
+        else if(dx < -threshold){ lightboxNext(); dragStartX = e.clientX; }
+      }
+    });
+
+    img.addEventListener('pointerup', ()=>{
+      if(isPointerDown && !dragMoved){
+        lightboxZoomed = !lightboxZoomed;
+        renderLightbox();
+      }
+      isPointerDown = false;
+    });
+    img.addEventListener('pointercancel', ()=>{ isPointerDown = false; });
+  });
+})();
+
+document.addEventListener('keydown', e=>{
+  const overlay = document.getElementById('lightbox-overlay');
+  if(!overlay || !overlay.classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowRight') lightboxNext();
+  else if(e.key === 'ArrowLeft') lightboxPrev();
+});
+
 /* ====================== MOBILE MENU ====================== */
 function toggleMobileMenu(){
   const nav = document.getElementById('mobile-nav');
@@ -646,6 +787,12 @@ function categoryOf(name){
   return 'custom';
 }
 
+function getProductImages(item){
+  if(item.images && item.images.length) return item.images;
+  if(item.image) return [item.image];
+  return ['https://placeholder.pics/svg/600x400'];
+}
+
 /* ====================== PRODUCTS ====================== */
 let allProducts = [];
 
@@ -691,13 +838,17 @@ function renderProducts(){
     return;
   }
 
+  window.currentFilteredProducts = filtered;
+
   filtered.forEach((item, idx)=>{
     const cat = categoryOf(item.name);
+    const imgs = getProductImages(item);
     wrapper.innerHTML += `
       <div class="product-card">
-        <div class="product-img-wrap">
-          <img src="${item.image || 'https://placeholder.pics/svg/300x200'}" alt="${item.name}">
+        <div class="product-img-wrap" onclick="openLightbox(${idx})">
+          <img src="${imgs[0]}" alt="${item.name}">
           <span class="spec-tag mono">SPEC-${String(idx+1).padStart(3,'0')}</span>
+          ${imgs.length > 1 ? `<span class="img-count-badge"><i class="fa-solid fa-images"></i> ${imgs.length}</span>` : ''}
         </div>
         <div class="product-info">
           <div class="product-title">${item.name}</div>
