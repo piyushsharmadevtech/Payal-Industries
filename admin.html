@@ -55,16 +55,6 @@
         .file-input-wrapper { position: relative; display: block; background: var(--surface); border: 2px dashed var(--line); padding: 12px; text-align: center; border-radius: 6px; cursor: pointer; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 
-        .btn-add-img { background: var(--steel); color: white; border: none; padding: 0 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size:13.5px; }
-        .btn-add-img:hover { background: var(--steel-dark); }
-
-        .image-gallery-preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-        .img-thumb-wrap { position: relative; width: 70px; height: 64px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
-        .img-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .img-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; border: none; background: rgba(0,0,0,0.65); color: #fff; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .img-thumb-remove:hover { background: #ef4444; }
-        .main-badge { position: absolute; bottom: 0; left: 0; right: 0; background: var(--safety); color: #fff; font-size: 9px; text-align: center; font-weight: 700; padding: 1px 0; }
-
         .btn-add { background: var(--safety); color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: 700; cursor: pointer; font-size:15px; font-family: var(--font-body); }
         .btn-add:hover{ filter: brightness(1.06); }
         .btn-cancel-edit { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); padding: 10px; width: 100%; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top:8px; display:none; font-family: var(--font-body); }
@@ -89,8 +79,8 @@
         <div class="login-card">
             <h2><i class="fa-solid fa-lock"></i> Payal Admin Access</h2>
             <div id="errMsg">Invalid Password!</div>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="username" placeholder="Username (admin)">
+            <input type="password" id="password" placeholder="Password (payal123)">
             <button class="btn-login" onclick="validateLogin()">Login to Dashboard</button>
         </div>
     </div>
@@ -119,42 +109,65 @@
                             <label>Product Name / Type Title</label>
                             <input type="text" id="p_name" placeholder="e.g. Whiteboard Duster - Premium Red Elastic" required>
                         </div>
+                        <div class="form-group hi-field" style="display:none;">
+                            <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Product Name (Hindi)</label>
+                            <input type="text" id="p_name_hi" placeholder="जैसे: व्हाइटबोर्ड डस्टर - प्रीमियम रेड इलास्टिक">
+                        </div>
 
-                        <!-- MULTI-IMAGE GALLERY MANAGER -->
+                        <!-- DUAL PHOTO CAPABILITY INTERFACE -->
                         <div class="form-group">
-                            <label>Product Images (multiple allowed)</label>
+                            <label>Product Image Options</label>
                             <div class="image-selection-box">
-                                <div style="display:flex; gap:8px;">
-                                    <input type="url" id="p_url" placeholder="Paste Direct Web Image Link (URL)" style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault(); addImageFromUrl();}">
-                                    <button type="button" class="btn-add-img" onclick="addImageFromUrl()">Add</button>
-                                </div>
+                                <input type="url" id="p_url" placeholder="Option 1: Paste Direct Web Image Link (URL)" oninput="handleUrlInput(this.value)">
                                 <div class="tabs-divider">OR</div>
                                 <div class="file-input-wrapper">
                                     <i class="fa-solid fa-image" style="color: var(--steel)"></i>
-                                    <span style="font-size:12px; margin-left:5px;">Choose from Gallery (multiple files allowed)</span>
-                                    <input type="file" id="p_file" accept="image/*" multiple onchange="handleGalleryUpload(this)">
+                                    <span id="upload-status" style="font-size:12px; margin-left:5px;">Option 2: Choose from Gallery</span>
+                                    <input type="file" id="p_file" accept="image/*" onchange="handleGalleryUpload(this)">
                                 </div>
                             </div>
-                            <div id="image-gallery-preview" class="image-gallery-preview"></div>
-                            <p style="font-size:11px;color:var(--muted); margin-top:8px;">First image = main catalog thumbnail. Add 3+ photos from different angles to enable "drag to rotate" on the live site.</p>
+                            <div id="preview-container" style="display:none; align-items:center; gap:10px; margin-top:10px; background:var(--surface-2); padding:8px; border-radius:6px;">
+                                <img id="image-live-preview" src="" style="width:50px; height:45px; object-fit:cover; border-radius:4px;">
+                                <span style="font-size:12px; color:var(--safety); font-weight:600;"><i class="fa-solid fa-circle-check"></i> Image Loaded!</span>
+                            </div>
                         </div>
 
                         <div class="form-group">
                             <label>Available Sizes</label>
                             <input type="text" id="p_size" placeholder="e.g. 25mm Standard / Big Size Duster" required>
                         </div>
+                        <div class="form-group hi-field" style="display:none;">
+                            <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Available Sizes (Hindi)</label>
+                            <input type="text" id="p_size_hi" placeholder="जैसे: 25mm स्टैंडर्ड / बड़ी साइज़ डस्टर">
+                        </div>
                         <div class="form-group">
                             <label>Available Colors</label>
                             <input type="text" id="p_colors" placeholder="e.g. Royal Blue, Sky Blue, Custom" required>
+                        </div>
+                        <div class="form-group hi-field" style="display:none;">
+                            <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Available Colors (Hindi)</label>
+                            <input type="text" id="p_colors_hi" placeholder="जैसे: रॉयल ब्लू, स्काई ब्लू, कस्टम">
                         </div>
                         <div class="form-group">
                             <label>Material Specifications</label>
                             <input type="text" id="p_material" placeholder="e.g. Heavy ABS Plastic Body / High Density Felt" required>
                         </div>
+                        <div class="form-group hi-field" style="display:none;">
+                            <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Material Specifications (Hindi)</label>
+                            <input type="text" id="p_material_hi" placeholder="जैसे: हैवी ABS प्लास्टिक बॉडी / हाई डेंसिटी फेल्ट">
+                        </div>
                         <div class="form-group">
                             <label>Custom Description / Quality Highlights</label>
                             <textarea id="p_desc" rows="3" placeholder="Write distinct qualities about this product type..." required></textarea>
                         </div>
+                        <div class="form-group hi-field" style="display:none;">
+                            <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Description (Hindi)</label>
+                            <textarea id="p_desc_hi" rows="3" placeholder="इस उत्पाद की खासियतें हिंदी में लिखें..."></textarea>
+                        </div>
+
+                        <button type="button" class="btn-cancel-edit" id="btn-toggle-hi" style="display:block; margin-bottom:10px;" onclick="toggleHindiFields()">
+                            <i class="fa-solid fa-language"></i> Add Hindi Translation (Optional)
+                        </button>
 
                         <button type="submit" class="btn-add" id="btn-submit-text">Publish Product</button>
                         <button type="button" class="btn-cancel-edit" id="btn-cancel" onclick="resetFormState()">Cancel Edit Mode</button>
@@ -192,35 +205,15 @@
     </div>
 
     <script>
-        let productImages = [];
+        /* Prevent an accidental hardware/browser back-press from instantly
+           closing the app when the admin panel is opened directly. */
+        history.pushState({ trap: true }, '', location.href);
+        window.addEventListener('popstate', function(){
+            window.location.href = 'index.html';
+        });
+
+        let finalImageSource = "";
         let productsCache = [];
-
-        function renderImageGalleryPreview() {
-            const wrap = document.getElementById('image-gallery-preview');
-            wrap.innerHTML = '';
-            productImages.forEach((src, idx) => {
-                wrap.innerHTML += `<div class="img-thumb-wrap">
-                    <img src="${src}" alt="image ${idx+1}">
-                    ${idx === 0 ? '<span class="main-badge">Main</span>' : ''}
-                    <button type="button" class="img-thumb-remove" onclick="removeProductImage(${idx})"><i class="fa-solid fa-xmark"></i></button>
-                </div>`;
-            });
-        }
-
-        window.removeProductImage = function(idx) {
-            productImages.splice(idx, 1);
-            renderImageGalleryPreview();
-        };
-
-        window.addImageFromUrl = function() {
-            const input = document.getElementById('p_url');
-            const val = input.value.trim();
-            if (val) {
-                productImages.push(val);
-                input.value = '';
-                renderImageGalleryPreview();
-            }
-        };
 
         if (sessionStorage.getItem('payal_admin_authed') === '1') {
             document.getElementById('loginOverlay').style.display = 'none';
@@ -274,17 +267,39 @@
             }
         }
 
+        function toggleHindiFields() {
+            const fields = document.querySelectorAll('.hi-field');
+            const btn = document.getElementById('btn-toggle-hi');
+            const isHidden = fields[0].style.display === 'none';
+            fields.forEach(f => f.style.display = isHidden ? 'block' : 'none');
+            btn.innerHTML = isHidden
+                ? '<i class="fa-solid fa-eye-slash"></i> Hide Hindi Translation'
+                : '<i class="fa-solid fa-language"></i> Add Hindi Translation (Optional)';
+        }
+
+        function handleUrlInput(val) {
+            if(val.trim() !== "") {
+                finalImageSource = val.trim();
+                document.getElementById('image-live-preview').src = finalImageSource;
+                document.getElementById('preview-container').style.display = 'flex';
+                document.getElementById('p_file').value = ""; // Clear gallery file input
+                document.getElementById('upload-status').innerText = "Option 2: Choose from Gallery";
+            }
+        }
+
         function handleGalleryUpload(input) {
-            const files = Array.from(input.files || []);
-            files.forEach(file => {
+            const file = input.files[0];
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    productImages.push(e.target.result);
-                    renderImageGalleryPreview();
+                    finalImageSource = e.target.result;
+                    document.getElementById('image-live-preview').src = finalImageSource;
+                    document.getElementById('preview-container').style.display = 'flex';
+                    document.getElementById('upload-status').innerText = "Gallery: " + file.name;
+                    document.getElementById('p_url').value = ""; // Clear url input
                 };
                 reader.readAsDataURL(file);
-            });
-            input.value = "";
+            }
         }
 
         async function loadAdminData() {
@@ -321,11 +336,9 @@
                     pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">No products listed. Add above!</td></tr>';
                 } else {
                     productsCache.forEach(p => {
-                        const thumb = (p.images && p.images.length) ? p.images[0] : (p.image || 'https://placeholder.pics/svg/50');
-                        const count = (p.images && p.images.length) ? p.images.length : (p.image ? 1 : 0);
                         pBody.innerHTML += `<tr>
-                            <td><img class="img-preview" src="${thumb}" alt="img">${count > 1 ? `<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:3px;">${count} photos</div>` : ''}</td>
-                            <td><strong>${p.name}</strong><br><span style="font-size:11px;color:var(--muted)">${p.size} | ${p.colors}</span></td>
+                            <td><img class="img-preview" src="${p.image || 'https://placeholder.pics/svg/50'}" alt="img"></td>
+                            <td><strong>${p.name}</strong> ${p.name_hi ? '<span style="font-size:10px; background:var(--steel); color:#fff; padding:2px 6px; border-radius:4px; margin-left:4px;">हिं</span>' : ''}<br><span style="font-size:11px;color:var(--muted)">${p.size} | ${p.colors}</span></td>
                             <td>
                                 <div class="action-btn-group">
                                     <button class="edit-btn" onclick="startEditProduct(${p.id})"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
@@ -342,8 +355,8 @@
 
         document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            if(productImages.length === 0) {
-                alert("Kam se kam ek image add karein - URL paste karein ya Gallery se upload karein!");
+            if(!finalImageSource) {
+                alert("Please image URL paste karein ya Gallery se image file upload karein!");
                 return;
             }
 
@@ -358,7 +371,12 @@
                 colors: document.getElementById('p_colors').value,
                 material: document.getElementById('p_material').value,
                 description: document.getElementById('p_desc').value,
-                images: productImages
+                image: finalImageSource,
+                name_hi: document.getElementById('p_name_hi').value,
+                size_hi: document.getElementById('p_size_hi').value,
+                colors_hi: document.getElementById('p_colors_hi').value,
+                material_hi: document.getElementById('p_material_hi').value,
+                description_hi: document.getElementById('p_desc_hi').value
             };
 
             try {
@@ -397,9 +415,25 @@
                 document.getElementById('p_colors').value = item.colors;
                 document.getElementById('p_material').value = item.material;
                 document.getElementById('p_desc').value = item.description;
+                document.getElementById('p_name_hi').value = item.name_hi || '';
+                document.getElementById('p_size_hi').value = item.size_hi || '';
+                document.getElementById('p_colors_hi').value = item.colors_hi || '';
+                document.getElementById('p_material_hi').value = item.material_hi || '';
+                document.getElementById('p_desc_hi').value = item.description_hi || '';
+                if(item.name_hi || item.size_hi || item.colors_hi || item.material_hi || item.description_hi) {
+                    document.querySelectorAll('.hi-field').forEach(f => f.style.display = 'block');
+                    document.getElementById('btn-toggle-hi').innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide Hindi Translation';
+                }
 
-                productImages = (item.images && item.images.length) ? [...item.images] : (item.image ? [item.image] : []);
-                renderImageGalleryPreview();
+                finalImageSource = item.image;
+                document.getElementById('image-live-preview').src = finalImageSource;
+                document.getElementById('preview-container').style.display = 'flex';
+
+                if(item.image.startsWith('http')) {
+                    document.getElementById('p_url').value = item.image;
+                } else {
+                    document.getElementById('upload-status').innerText = "Gallery Image Loaded";
+                }
 
                 document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Mode: ${item.name}`;
                 document.getElementById('btn-submit-text').innerText = "Save Changes & Update Live";
@@ -411,11 +445,14 @@
         window.resetFormState = function() {
             document.getElementById('productForm').reset();
             document.getElementById('edit_product_id').value = "";
-            productImages = [];
-            renderImageGalleryPreview();
+            finalImageSource = "";
+            document.getElementById('preview-container').style.display = 'none';
+            document.getElementById('upload-status').innerText = "Option 2: Choose from Gallery";
             document.getElementById('form-title').innerHTML = `<i class="fa-solid fa-plus"></i> Add New Custom Product`;
             document.getElementById('btn-submit-text').innerText = "Publish Product";
             document.getElementById('btn-cancel').style.display = "none";
+            document.querySelectorAll('.hi-field').forEach(f => f.style.display = 'none');
+            document.getElementById('btn-toggle-hi').innerHTML = '<i class="fa-solid fa-language"></i> Add Hindi Translation (Optional)';
         };
 
         window.deleteQuery = async function(id) {
