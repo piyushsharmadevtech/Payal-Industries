@@ -3,7 +3,7 @@ import { put } from '@vercel/blob';
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '15mb' // Multiple photos ke liye size limit thodi badha di hai
+      sizeLimit: '8mb'
     }
   }
 };
@@ -24,48 +24,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { image, images } = req.body || {};
-    
-    // Support both single 'image' or multiple 'images' array
-    let filesToUpload = [];
-    if (images && Array.isArray(images)) {
-      filesToUpload = images;
-    } else if (image) {
-      filesToUpload = [image];
+    const { image } = req.body || {};
+    if (!image) {
+      return res.status(400).json({ error: 'image (base64 data URL) is required' });
     }
 
-    if (filesToUpload.length === 0) {
-      return res.status(400).json({ error: 'image or images array is required' });
+    // If it's already a normal URL (not base64), nothing to upload — just pass it back.
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return res.status(200).json({ url: image });
     }
 
-    const uploadedUrls = [];
-
-    for (const img of filesToUpload) {
-      // If it's already a normal URL, keep it as is
-      if (typeof img === 'string' && (img.startsWith('http://') || img.startsWith('https://'))) {
-        uploadedUrls.push(img);
-        continue;
-      }
-
-      const parsed = parseDataUrl(img);
-      if (!parsed) continue;
-
-      const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${parsed.ext}`;
-
-      const blob = await put(filename, parsed.buffer, {
-        access: 'public',
-        contentType: parsed.mimeType
-      });
-
-      uploadedUrls.push(blob.url);
+    const parsed = parseDataUrl(image);
+    if (!parsed) {
+      return res.status(400).json({ error: 'Invalid image data' });
     }
 
-    // Agar single image bheji thi toh compatibility ke liye 'url' bhi bhej denge, aur 'urls' bhi
-    return res.status(200).json({ 
-      url: uploadedUrls[0] || '', 
-      urls: uploadedUrls 
+    const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${parsed.ext}`;
+
+    const blob = await put(filename, parsed.buffer, {
+      access: 'public',
+      contentType: parsed.mimeType
     });
 
+    return res.status(200).json({ url: blob.url });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
