@@ -262,12 +262,50 @@
     .products-toolbar{ flex-direction:column; align-items:flex-start; }
     .search-box input{ width:100%; }
   }
+  /* ---------- Image Lightbox ---------- */
+  .product-img-wrap{ cursor:zoom-in; }
+  #lightbox-overlay{
+    position:fixed; inset:0; background:rgba(10,14,22,0.94); z-index:9998;
+    display:none; align-items:center; justify-content:center; flex-direction:column;
+    padding:20px; opacity:0; transition:opacity .25s ease;
+  }
+  #lightbox-overlay.open{ display:flex; opacity:1; }
+  .lightbox-main{ position:relative; width:100%; max-width:880px; display:flex; align-items:center; justify-content:center; flex:1; min-height:0; }
+  .lightbox-main img{ max-width:100%; max-height:72vh; object-fit:contain; border-radius:8px; background:#0d1320; transition:opacity .2s ease; user-select:none; }
+  .lightbox-close{ position:absolute; top:18px; right:18px; width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.2); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2; transition:background .2s ease; }
+  .lightbox-close:hover{ background:rgba(255,255,255,.18); }
+  .lightbox-arrow{ position:absolute; top:50%; transform:translateY(-50%); width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.2); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2; transition:background .2s ease, transform .2s ease; }
+  .lightbox-arrow:hover{ background:rgba(255,255,255,.2); }
+  .lightbox-arrow.prev{ left:6px; }
+  .lightbox-arrow.next{ right:6px; }
+  .lightbox-arrow:disabled{ opacity:.3; cursor:default; }
+  .lightbox-counter{ font-family:var(--font-mono); color:#dfe4ea; font-size:12.5px; margin:14px 0 10px; letter-spacing:.5px; }
+  .lightbox-thumbs{ display:flex; gap:8px; overflow-x:auto; max-width:100%; padding:2px 4px 8px; scroll-behavior:smooth; }
+  .lightbox-thumbs::-webkit-scrollbar{ height:5px; }
+  .lightbox-thumbs::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.2); border-radius:3px; }
+  .lightbox-thumbs img{ width:58px; height:50px; object-fit:cover; border-radius:6px; flex:none; cursor:pointer; opacity:.55; border:2px solid transparent; transition:opacity .2s ease, border-color .2s ease; }
+  .lightbox-thumbs img.active{ opacity:1; border-color:var(--safety); }
+  @media (max-width:600px){
+    .lightbox-arrow{ width:38px; height:38px; font-size:15px; }
+    .lightbox-main img{ max-height:56vh; }
+  }
   @media (max-width:560px){
     #quote-btn-desktop{ display:none; }
   }
 </style>
 </head>
 <body>
+
+<div id="lightbox-overlay" onclick="if(event.target===this) closeLightbox()">
+  <div class="lightbox-main">
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <button class="lightbox-arrow prev" id="lb-prev" onclick="lightboxNav(-1)" aria-label="Previous image"><i class="fa-solid fa-chevron-left"></i></button>
+    <img id="lightbox-img" src="" alt="">
+    <button class="lightbox-arrow next" id="lb-next" onclick="lightboxNav(1)" aria-label="Next image"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+  <div class="lightbox-thumbs" id="lightbox-thumbs"></div>
+</div>
 
 <div class="accent-bar"></div>
 
@@ -728,6 +766,7 @@ function renderProducts(){
 
   updateFilterCounts(all);
   wrapper.innerHTML = '';
+  window.currentGalleryProducts = filtered;
 
   if(all.length === 0){
     wrapper.innerHTML = `<div class="no-products">
@@ -760,7 +799,7 @@ function renderProducts(){
 
     wrapper.innerHTML += `
       <div class="product-card">
-        <div class="product-img-wrap">
+        <div class="product-img-wrap" onclick="openLightbox(${idx})">
           <img src="${item.image || 'https://placeholder.pics/svg/300x200'}" alt="${displayName}" loading="lazy">
           <span class="spec-tag mono">SPEC-${String(idx+1).padStart(3,'0')}</span>
           ${isNew ? `<span class="new-badge">${t.badge_new}</span>` : ''}
@@ -791,6 +830,83 @@ function updateFilterCounts(all){
     if(countEl) countEl.textContent = `(${counts[key] || 0})`;
   });
 }
+
+/* ====================== IMAGE LIGHTBOX (Amazon-style gallery) ====================== */
+let lightboxImages = [];
+let lightboxIndex = 0;
+
+window.openLightbox = function(productIdx){
+  const item = (window.currentGalleryProducts || [])[productIdx];
+  if(!item) return;
+  const gallery = Array.isArray(item.images) && item.images.length ? item.images : [item.image].filter(Boolean);
+  if(!gallery.length) return;
+
+  lightboxImages = gallery;
+  lightboxIndex = 0;
+  renderLightboxFrame();
+
+  document.getElementById('lightbox-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeLightbox = function(){
+  document.getElementById('lightbox-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+window.lightboxNav = function(direction){
+  const nextIndex = lightboxIndex + direction;
+  if(nextIndex < 0 || nextIndex >= lightboxImages.length) return;
+  lightboxIndex = nextIndex;
+  renderLightboxFrame();
+};
+
+function renderLightboxFrame(){
+  const total = lightboxImages.length;
+  document.getElementById('lightbox-img').src = lightboxImages[lightboxIndex];
+  document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${total}`;
+
+  document.getElementById('lb-prev').disabled = lightboxIndex === 0;
+  document.getElementById('lb-next').disabled = lightboxIndex === total - 1;
+  document.getElementById('lb-prev').style.display = total > 1 ? 'flex' : 'none';
+  document.getElementById('lb-next').style.display = total > 1 ? 'flex' : 'none';
+
+  const thumbsWrap = document.getElementById('lightbox-thumbs');
+  if(total > 1){
+    thumbsWrap.style.display = 'flex';
+    thumbsWrap.innerHTML = lightboxImages.map((src, i) =>
+      `<img src="${src}" class="${i === lightboxIndex ? 'active' : ''}" onclick="lightboxGoTo(${i})" alt="thumbnail ${i+1}">`
+    ).join('');
+    const activeThumb = thumbsWrap.children[lightboxIndex];
+    if(activeThumb) activeThumb.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  } else {
+    thumbsWrap.style.display = 'none';
+    thumbsWrap.innerHTML = '';
+  }
+}
+
+window.lightboxGoTo = function(i){
+  lightboxIndex = i;
+  renderLightboxFrame();
+};
+
+document.addEventListener('keydown', function(e){
+  if(!document.getElementById('lightbox-overlay').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft') lightboxNav(-1);
+  if(e.key === 'ArrowRight') lightboxNav(1);
+});
+
+/* Touch swipe support for mobile */
+(function initLightboxSwipe(){
+  const mainArea = document.querySelector('.lightbox-main');
+  let touchStartX = 0;
+  mainArea.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].clientX; }, { passive:true });
+  mainArea.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(diff) > 40) lightboxNav(diff > 0 ? -1 : 1);
+  }, { passive:true });
+})();
 
 function selectProduct(name){
   const dropdown = document.getElementById('product');
@@ -902,7 +1018,14 @@ window.addEventListener('scroll', function(){
   });
 
   window.addEventListener('popstate', function(e){
-    // If the mobile menu is open, back should close it first.
+    // If the lightbox is open, back should close it first.
+    const lightbox = document.getElementById('lightbox-overlay');
+    if(lightbox && lightbox.classList.contains('open')){
+      closeLightbox();
+      history.pushState({ trap:true, section: currentSectionFromScroll() }, '', location.hash || '#');
+      return;
+    }
+    // If the mobile menu is open, back should close it next.
     const mobileNav = document.getElementById('mobile-nav');
     if(mobileNav.classList.contains('open')){
       closeMobileMenu();
