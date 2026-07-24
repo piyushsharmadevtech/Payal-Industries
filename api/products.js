@@ -1,15 +1,7 @@
-import { Redis } from '@upstash/redis';
-
-const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_REST_URL;
-const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.REDIS_REST_TOKEN;
-const kv = new Redis({ url, token });
+import { kv } from '@vercel/kv';
 
 export default async function handler(req, res) {
   try {
-    if (!url || !token) {
-      return res.status(500).json({ error: 'Database not connected. Add a Redis/Upstash store from Vercel Storage and redeploy.' });
-    }
-
     if (req.method === 'GET') {
       const products = (await kv.get('products')) || [];
       return res.status(200).json(products);
@@ -17,11 +9,8 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       const body = req.body || {};
-      const images = Array.isArray(body.images) && body.images.length
-        ? body.images
-        : (body.image ? [body.image] : []);
-      if (!body.name || images.length === 0) {
-        return res.status(400).json({ error: 'name and at least one image are required' });
+      if (!body.name || !body.image) {
+        return res.status(400).json({ error: 'name and image are required' });
       }
       const products = (await kv.get('products')) || [];
       const newProduct = {
@@ -31,7 +20,12 @@ export default async function handler(req, res) {
         colors: body.colors || '',
         material: body.material || '',
         description: body.description || '',
-        images
+        image: body.image || '',
+        name_hi: body.name_hi || '',
+        size_hi: body.size_hi || '',
+        colors_hi: body.colors_hi || '',
+        material_hi: body.material_hi || '',
+        description_hi: body.description_hi || ''
       };
       products.push(newProduct);
       await kv.set('products', products);
@@ -42,9 +36,6 @@ export default async function handler(req, res) {
       const { id } = req.query;
       if (!id) return res.status(400).json({ error: 'id is required' });
       const body = req.body || {};
-      if (Array.isArray(body.images) && body.images.length === 0) {
-        return res.status(400).json({ error: 'at least one image is required' });
-      }
       let products = (await kv.get('products')) || [];
       let found = false;
       products = products.map(p => {
