@@ -92,6 +92,7 @@
                 <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
                     <i class="fa-solid fa-moon" id="theme-icon"></i>
                 </button>
+                <button class="btn-back" id="btn-migrate" style="border:none; cursor:pointer; background:var(--safety);" onclick="runImageMigration()"><i class="fa-solid fa-broom"></i> Optimize Old Images</button>
                 <button class="btn-back" style="border:none; cursor:pointer;" onclick="logoutAdmin()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                 <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> View Live Website</a>
             </div>
@@ -291,16 +292,56 @@
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    finalImageSource = e.target.result;
-                    document.getElementById('image-live-preview').src = finalImageSource;
+                reader.onload = async function(e) {
+                    const localPreview = e.target.result;
+                    document.getElementById('image-live-preview').src = localPreview;
                     document.getElementById('preview-container').style.display = 'flex';
-                    document.getElementById('upload-status').innerText = "Gallery: " + file.name;
+                    document.getElementById('upload-status').innerText = "Uploading " + file.name + "...";
                     document.getElementById('p_url').value = ""; // Clear url input
+                    finalImageSource = ""; // block submit until upload finishes
+
+                    try {
+                        const res = await fetch('/api/upload', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ image: localPreview })
+                        });
+                        if (!res.ok) throw new Error('Upload failed');
+                        const data = await res.json();
+                        finalImageSource = data.url;
+                        document.getElementById('upload-status').innerText = "Uploaded: " + file.name;
+                    } catch (err) {
+                        document.getElementById('upload-status').innerText = "Upload failed, try again";
+                        finalImageSource = "";
+                        alert("Image upload mein dikkat aayi, dobara try karein.");
+                    }
                 };
                 reader.readAsDataURL(file);
             }
         }
+
+        window.runImageMigration = async function() {
+            const confirmed = confirm("Ye purane products ki heavy images ko optimize karega (ek baar chalana kaafi hai). Continue karein?");
+            if (!confirmed) return;
+
+            const btn = document.getElementById('btn-migrate');
+            const originalLabel = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Optimizing...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/migrate-images', { method: 'POST' });
+                if (!res.ok) throw new Error('Migration failed');
+                const data = await res.json();
+                alert(`Ho gaya! ${data.totalProducts} products check kiye, ${data.migratedImages} images optimize hui, ${data.droppedLegacyFields} purani unused entries hati.`);
+                loadAdminData();
+            } catch (err) {
+                alert("Migration mein dikkat aayi, dobara try karein.");
+            } finally {
+                btn.innerHTML = originalLabel;
+                btn.disabled = false;
+            }
+        };
 
         async function loadAdminData() {
             // Load Inquiries
@@ -356,7 +397,7 @@
         document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if(!finalImageSource) {
-                alert("Please image URL paste karein ya Gallery se image file upload karein!");
+                alert("Please image URL paste karein, ya Gallery se image upload hone ka wait karein!");
                 return;
             }
 
