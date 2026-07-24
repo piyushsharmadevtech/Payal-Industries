@@ -9,14 +9,9 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       const body = req.body || {};
-      const imagesList = body.images && Array.isArray(body.images) && body.images.length > 0 
-        ? body.images 
-        : (body.image ? [body.image] : []);
-
-      if (!body.name) {
-        return res.status(400).json({ error: 'Product name is required' });
+      if (!body.name || !body.image) {
+        return res.status(400).json({ error: 'name and image are required' });
       }
-
       const products = (await kv.get('products')) || [];
       const newProduct = {
         id: Date.now(),
@@ -25,8 +20,8 @@ export default async function handler(req, res) {
         colors: body.colors || '',
         material: body.material || '',
         description: body.description || '',
-        image: imagesList[0] || '',
-        images: imagesList,
+        image: body.image || '',
+        images: Array.isArray(body.images) && body.images.length ? body.images : [body.image || ''].filter(Boolean),
         name_hi: body.name_hi || '',
         size_hi: body.size_hi || '',
         colors_hi: body.colors_hi || '',
@@ -44,22 +39,10 @@ export default async function handler(req, res) {
       const body = req.body || {};
       let products = (await kv.get('products')) || [];
       let found = false;
-
       products = products.map(p => {
-        if (String(p.id) === String(id)) {
-          found = true;
-          const updatedImages = body.images || p.images || (body.image ? [body.image] : p.image ? [p.image] : []);
-          return { 
-            ...p, 
-            ...body, 
-            id: p.id,
-            images: updatedImages,
-            image: updatedImages[0] || p.image || ''
-          };
-        }
+        if (String(p.id) === String(id)) { found = true; return { ...p, ...body, id: p.id }; }
         return p;
       });
-
       if (!found) return res.status(404).json({ error: 'product not found' });
       await kv.set('products', products);
       return res.status(200).json({ success: true });
