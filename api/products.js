@@ -9,13 +9,12 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
       const body = req.body || {};
-      // Accept either 'image' or 'images' array
       const imagesList = body.images && Array.isArray(body.images) && body.images.length > 0 
         ? body.images 
         : (body.image ? [body.image] : []);
 
-      if (!body.name || imagesList.length === 0) {
-        return res.status(400).json({ error: 'name and at least one image are required' });
+      if (!body.name) {
+        return res.status(400).json({ error: 'Product name is required' });
       }
 
       const products = (await kv.get('products')) || [];
@@ -26,8 +25,8 @@ export default async function handler(req, res) {
         colors: body.colors || '',
         material: body.material || '',
         description: body.description || '',
-        image: imagesList[0], // Fallback for old single image support
-        images: imagesList,    // Multi-image array for Amazon-style slider
+        image: imagesList[0] || '',
+        images: imagesList,
         name_hi: body.name_hi || '',
         size_hi: body.size_hi || '',
         colors_hi: body.colors_hi || '',
@@ -49,7 +48,6 @@ export default async function handler(req, res) {
       products = products.map(p => {
         if (String(p.id) === String(id)) {
           found = true;
-          // Ensure images array is updated properly if sent
           const updatedImages = body.images || p.images || (body.image ? [body.image] : p.image ? [p.image] : []);
           return { 
             ...p, 
