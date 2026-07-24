@@ -50,7 +50,7 @@ Once this is done, `/api/products` and `/api/queries` will read from and write t
 
 ## Step 4 — Set an Admin Password (Recommended)
 
-By default, the login credentials are `admin` / `payal123` (used only if no environment variables are set).
+ (used only if no environment variables are set).
 
 To set your own credentials for production:
 
