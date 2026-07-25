@@ -185,10 +185,64 @@
   .filter-tab .count{ opacity:.65; font-size:11px; }
   .new-badge{ position:absolute; top:10px; left:10px; background:var(--safety); color:#fff; font-family:var(--font-mono); font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 9px; border-radius:4px; z-index:2; animation:pulseBadge 2s ease-in-out infinite; }
   @keyframes pulseBadge{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
-  .product-actions{ display:flex; gap:8px; }
-  .product-actions .btn-query-item{ flex:1; }
-  .btn-wa-item{ flex:none; width:44px; display:flex; align-items:center; justify-content:center; background:#25D366; color:#fff; border-radius:7px; text-decoration:none; font-size:18px; transition:filter .2s ease; }
+  .product-actions{ display:flex; flex-direction:column; gap:8px; }
+  .product-actions .btn-query-item{ width:100%; }
+  .product-actions-row{ display:flex; gap:8px; }
+  .product-actions-row a{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; border-radius:7px; text-decoration:none; font-weight:600; font-size:12.5px; transition:filter .2s ease; }
+  .btn-call-item{ background:var(--surface-2); color:var(--steel); border:1px solid var(--line); }
+  .btn-call-item:hover{ background:var(--steel); color:#fff; border-color:var(--steel); }
+  .btn-wa-item{ background:#25D366; color:#fff; }
   .btn-wa-item:hover{ filter:brightness(1.08); }
+
+  .star-rating{ color:var(--safety); font-size:13px; letter-spacing:1px; }
+  .star-rating .count{ color:var(--muted); font-family:var(--font-mono); font-size:11.5px; letter-spacing:0; margin-left:4px; }
+  .product-rating-row{ margin-bottom:10px; min-height:16px; }
+  .product-img-wrap{ cursor:pointer; }
+  .product-title{ cursor:pointer; }
+  .product-title:hover{ color:var(--steel); }
+
+  /* ---------- Product detail modal ---------- */
+  #detail-overlay{ position:fixed; inset:0; background:rgba(10,14,22,.6); backdrop-filter:blur(2px); z-index:9997; display:none; align-items:flex-start; justify-content:center; padding:30px 16px; overflow-y:auto; }
+  #detail-overlay.open{ display:flex; }
+  .detail-box{ background:var(--surface); border-radius:14px; max-width:900px; width:100%; margin:auto; box-shadow:0 24px 60px rgba(0,0,0,.35); position:relative; overflow:hidden; }
+  .detail-close{ position:absolute; top:16px; right:16px; width:38px; height:38px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); color:var(--ink); font-size:16px; cursor:pointer; z-index:2; display:flex; align-items:center; justify-content:center; }
+  .detail-close:hover{ border-color:var(--steel); color:var(--steel); }
+  .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; }
+  @media (max-width:760px){ .detail-grid{ grid-template-columns:1fr; } }
+  .detail-gallery{ background:var(--surface-2); padding:24px; }
+  .detail-gallery-main{ width:100%; height:280px; border-radius:10px; overflow:hidden; background:var(--surface); margin-bottom:12px; cursor:zoom-in; }
+  .detail-gallery-main img{ width:100%; height:100%; object-fit:cover; }
+  .detail-gallery-thumbs{ display:flex; gap:8px; flex-wrap:wrap; }
+  .detail-gallery-thumbs img{ width:54px; height:48px; object-fit:cover; border-radius:6px; cursor:pointer; opacity:.6; border:2px solid transparent; transition:opacity .2s ease, border-color .2s ease; }
+  .detail-gallery-thumbs img.active{ opacity:1; border-color:var(--safety); }
+  .detail-info{ padding:28px 26px; max-height:80vh; overflow-y:auto; }
+  .detail-info h2{ font-family:var(--font-display); font-size:22px; color:var(--ink); margin-bottom:8px; padding-right:30px; }
+  .detail-info .detail-desc{ color:var(--muted); font-size:14px; margin-bottom:18px; line-height:1.6; }
+  .detail-specs{ margin-bottom:20px; }
+  .detail-specs h4{ font-family:var(--font-mono); font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+  .detail-actions{ display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+  .detail-actions a{ display:flex; align-items:center; justify-content:center; gap:7px; padding:11px 16px; border-radius:8px; text-decoration:none; font-weight:600; font-size:13.5px; }
+  .detail-section{ border-top:1px solid var(--line); padding-top:18px; margin-top:18px; }
+  .detail-section h4{ font-family:var(--font-display); font-size:14.5px; color:var(--ink); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .review-item{ padding:12px 0; border-bottom:1px dashed var(--line); }
+  .review-item:last-child{ border-bottom:none; }
+  .review-item .review-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; flex-wrap:wrap; gap:6px; }
+  .review-item .reviewer-name{ font-weight:600; font-size:13.5px; color:var(--ink); }
+  .review-item .review-company{ font-size:11.5px; color:var(--muted); }
+  .review-item .review-text{ font-size:13px; color:var(--muted); line-height:1.55; }
+  .past-order-item{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px; }
+  .past-order-item:last-child{ border-bottom:none; }
+  .past-order-item .po-buyer{ font-weight:600; color:var(--ink); }
+  .past-order-item .po-meta{ color:var(--muted); font-size:11.5px; }
+  .empty-note{ color:var(--muted); font-size:13px; font-style:italic; }
+
+  /* ---------- Testimonials ---------- */
+  .testimonials-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:22px; }
+  .testimonial-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px; }
+  .testimonial-card .star-rating{ margin-bottom:10px; display:block; }
+  .testimonial-card .t-text{ color:var(--ink); font-size:14px; line-height:1.6; margin-bottom:16px; }
+  .testimonial-card .t-name{ font-weight:600; font-size:13.5px; color:var(--ink); }
+  .testimonial-card .t-company{ font-size:12px; color:var(--muted); }
 
   /* ---------- Skeleton loader ---------- */
   .skeleton-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
@@ -308,7 +362,15 @@
   <div class="lightbox-thumbs" id="lightbox-thumbs"></div>
 </div>
 
+<div id="detail-overlay" onclick="if(event.target===this) closeProductDetail()">
+  <div class="detail-box">
+    <button class="detail-close" onclick="closeProductDetail()" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="detail-grid" id="detail-content"></div>
+  </div>
+</div>
+
 <div class="accent-bar"></div>
+
 
 <header>
   <div class="nav-container">
@@ -470,6 +532,14 @@
   </div>
 </section>
 
+<section class="section" id="testimonials">
+  <div class="section-head reveal">
+    <div class="eyebrow" data-i18n="testimonials_eyebrow">CLIENT FEEDBACK</div>
+    <h2 data-i18n="testimonials_title">What Our Clients Say</h2>
+  </div>
+  <div class="testimonials-grid reveal" id="testimonials-container"></div>
+</section>
+
 <section class="section" id="contact">
   <div class="section-head reveal">
     <div class="eyebrow" data-i18n="contact_eyebrow">GET IN TOUCH</div>
@@ -577,6 +647,14 @@ const translations = {
     search_placeholder:"Search products...",
     spec_sizes:"Sizes", spec_colors:"Colors", spec_material:"Material",
     btn_get_quote:"Get Bulk Quote",
+    btn_call:"Call", btn_whatsapp:"WhatsApp",
+    reviews_heading:"Reviews", reviews_none:"No reviews yet.",
+    reviews_based_on: n => `Based on ${n} review${n===1?'':'s'}`,
+    past_orders_heading:"Recently Ordered By",
+    testimonials_eyebrow:"CLIENT FEEDBACK", testimonials_title:"What Our Clients Say",
+    testimonials_none:"Reviews will appear here soon.",
+    view_details:"View Details", close_label:"Close",
+    detail_specs_heading:"Specifications",
     no_products_title:"No products live right now.",
     no_products_desc:"Visit the Admin Panel to add custom corners or dusters.",
     no_results:"No products match your search or filter.",
@@ -621,6 +699,14 @@ const translations = {
     search_placeholder:"उत्पाद खोजें...",
     spec_sizes:"साइज़", spec_colors:"रंग", spec_material:"सामग्री",
     btn_get_quote:"बल्क कोटेशन लें",
+    btn_call:"कॉल करें", btn_whatsapp:"व्हाट्सएप",
+    reviews_heading:"समीक्षाएं", reviews_none:"अभी कोई समीक्षा नहीं है।",
+    reviews_based_on: n => `${n} समीक्षा${n===1?'':'ओं'} के आधार पर`,
+    past_orders_heading:"हाल ही में ऑर्डर किया",
+    testimonials_eyebrow:"ग्राहकों की राय", testimonials_title:"हमारे ग्राहक क्या कहते हैं",
+    testimonials_none:"समीक्षाएं जल्द ही यहां दिखेंगी।",
+    view_details:"विवरण देखें", close_label:"बंद करें",
+    detail_specs_heading:"विशेष विवरण",
     no_products_title:"अभी कोई उत्पाद लाइव नहीं है।",
     no_products_desc:"कस्टम कॉर्नर या डस्टर जोड़ने के लिए एडमिन पैनल पर जाएं।",
     no_results:"आपकी खोज या फ़िल्टर से मेल खाने वाला कोई उत्पाद नहीं मिला।",
@@ -668,6 +754,7 @@ function setLang(lang){
   document.getElementById('lang-hi').classList.toggle('active', lang==='hi');
   applyTranslations(lang);
   renderProducts();
+  renderTestimonials();
 }
 
 /* ====================== MOBILE MENU ====================== */
@@ -722,6 +809,8 @@ function categoryOf(name){
 
 /* ====================== PRODUCTS ====================== */
 let allProducts = [];
+let allReviews = [];
+let allPastOrders = [];
 
 function renderSkeletons(count){
   const wrapper = document.getElementById('product-container');
@@ -743,14 +832,36 @@ function renderSkeletons(count){
 async function fetchProducts(){
   renderSkeletons(6);
   try{
-    const res = await fetch('/api/products');
-    if(!res.ok) throw new Error('Failed to load products');
-    allProducts = await res.json();
+    const [pRes, rRes, oRes] = await Promise.all([
+      fetch('/api/products'),
+      fetch('/api/reviews').catch(()=>null),
+      fetch('/api/orders').catch(()=>null)
+    ]);
+    allProducts = pRes.ok ? await pRes.json() : [];
+    allReviews = (rRes && rRes.ok) ? await rRes.json() : [];
+    allPastOrders = (oRes && oRes.ok) ? await oRes.json() : [];
   }catch(err){
     console.error(err);
-    allProducts = [];
+    allProducts = []; allReviews = []; allPastOrders = [];
   }
   renderProducts();
+  renderTestimonials();
+}
+
+/* ---------- Ratings helpers ---------- */
+function reviewsForProduct(productId){
+  return allReviews.filter(r => r.productId && String(r.productId) === String(productId));
+}
+function ratingStats(productId){
+  const list = reviewsForProduct(productId);
+  if(!list.length) return { avg: 0, count: 0 };
+  const avg = list.reduce((sum, r) => sum + Number(r.rating || 0), 0) / list.length;
+  return { avg, count: list.length };
+}
+function starRatingHTML(avg, count){
+  const rounded = Math.round(avg);
+  const stars = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+  return `<span class="star-rating">${stars}<span class="count">${avg.toFixed(1)} (${count})</span></span>`;
 }
 
 function renderProducts(){
@@ -767,7 +878,6 @@ function renderProducts(){
 
   updateFilterCounts(all);
   wrapper.innerHTML = '';
-  window.currentGalleryProducts = filtered;
 
   if(all.length === 0){
     wrapper.innerHTML = `<div class="no-products">
@@ -791,31 +901,26 @@ function renderProducts(){
 
   filtered.forEach((item, idx)=>{
     const displayName = (isHi && item.name_hi) ? item.name_hi : item.name;
-    const displayDesc = (isHi && item.description_hi) ? item.description_hi : (item.description || '');
-    const displaySize = (isHi && item.size_hi) ? item.size_hi : (item.size || '—');
-    const displayColors = (isHi && item.colors_hi) ? item.colors_hi : (item.colors || '—');
-    const displayMaterial = (isHi && item.material_hi) ? item.material_hi : (item.material || '—');
     const isNew = item.id && Number(item.id) > oneWeekAgo;
     const waMsg = encodeURIComponent(`${isHi ? 'नमस्ते, मुझे इसमें रुचि है' : 'Hi, I am interested in'}: ${item.name}`);
+    const stats = ratingStats(item.id);
 
     wrapper.innerHTML += `
       <div class="product-card">
-        <div class="product-img-wrap" onclick="openLightbox(${idx})">
+        <div class="product-img-wrap" onclick="openProductDetail('${item.id}')">
           <img src="${item.image || 'https://placeholder.pics/svg/300x200'}" alt="${displayName}" loading="lazy">
           <span class="spec-tag mono">SPEC-${String(idx+1).padStart(3,'0')}</span>
           ${isNew ? `<span class="new-badge">${t.badge_new}</span>` : ''}
         </div>
         <div class="product-info">
-          <div class="product-title">${displayName}</div>
-          <p class="product-desc">${displayDesc}</p>
-          <div class="specs-table">
-            <div class="row"><span class="k">${t.spec_sizes}</span><span class="v">${displaySize}</span></div>
-            <div class="row"><span class="k">${t.spec_colors}</span><span class="v">${displayColors}</span></div>
-            <div class="row"><span class="k">${t.spec_material}</span><span class="v">${displayMaterial}</span></div>
-          </div>
+          <div class="product-title" onclick="openProductDetail('${item.id}')">${displayName}</div>
+          <div class="product-rating-row">${stats.count ? starRatingHTML(stats.avg, stats.count) : ''}</div>
           <div class="product-actions">
-            <a href="#contact" class="btn-query-item" onclick="selectProduct('${(item.name||'').replace(/'/g,"\\'")}')">${t.btn_get_quote}</a>
-            <a href="https://wa.me/919811071627?text=${waMsg}" target="_blank" rel="noopener" class="btn-wa-item" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="#contact" class="btn-query-item" onclick="event.stopPropagation(); selectProduct('${(item.name||'').replace(/'/g,"\\'")}')">${t.btn_get_quote}</a>
+            <div class="product-actions-row">
+              <a href="tel:+919811071627" onclick="event.stopPropagation();" class="btn-call-item"><i class="fa-solid fa-phone"></i> ${t.btn_call}</a>
+              <a href="https://wa.me/919811071627?text=${waMsg}" target="_blank" rel="noopener" onclick="event.stopPropagation();" class="btn-wa-item"><i class="fa-brands fa-whatsapp"></i> ${t.btn_whatsapp}</a>
+            </div>
           </div>
         </div>
       </div>`;
@@ -832,18 +937,17 @@ function updateFilterCounts(all){
   });
 }
 
+
 /* ====================== IMAGE LIGHTBOX (Amazon-style gallery) ====================== */
 let lightboxImages = [];
 let lightboxIndex = 0;
 
-window.openLightbox = function(productIdx){
-  const item = (window.currentGalleryProducts || [])[productIdx];
-  if(!item) return;
-  const gallery = Array.isArray(item.images) && item.images.length ? item.images : [item.image].filter(Boolean);
+window.openLightbox = function(images, startIndex){
+  const gallery = Array.isArray(images) ? images.filter(Boolean) : [];
   if(!gallery.length) return;
 
   lightboxImages = gallery;
-  lightboxIndex = 0;
+  lightboxIndex = startIndex || 0;
   renderLightboxFrame();
 
   document.getElementById('lightbox-overlay').classList.add('open');
@@ -892,10 +996,15 @@ window.lightboxGoTo = function(i){
 };
 
 document.addEventListener('keydown', function(e){
-  if(!document.getElementById('lightbox-overlay').classList.contains('open')) return;
-  if(e.key === 'Escape') closeLightbox();
-  if(e.key === 'ArrowLeft') lightboxNav(-1);
-  if(e.key === 'ArrowRight') lightboxNav(1);
+  if(document.getElementById('lightbox-overlay').classList.contains('open')){
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowLeft') lightboxNav(-1);
+    if(e.key === 'ArrowRight') lightboxNav(1);
+    return;
+  }
+  if(document.getElementById('detail-overlay').classList.contains('open')){
+    if(e.key === 'Escape') closeProductDetail();
+  }
 });
 
 /* Touch swipe support for mobile */
@@ -908,6 +1017,113 @@ document.addEventListener('keydown', function(e){
     if(Math.abs(diff) > 40) lightboxNav(diff > 0 ? -1 : 1);
   }, { passive:true });
 })();
+
+/* ====================== PRODUCT DETAIL MODAL ====================== */
+window.openProductDetail = function(productId){
+  const item = allProducts.find(p => String(p.id) === String(productId));
+  if(!item) return;
+
+  const t = translations[currentLang];
+  const isHi = currentLang === 'hi';
+  const displayName = (isHi && item.name_hi) ? item.name_hi : item.name;
+  const displayDesc = (isHi && item.description_hi) ? item.description_hi : (item.description || '');
+  const displaySize = (isHi && item.size_hi) ? item.size_hi : (item.size || '—');
+  const displayColors = (isHi && item.colors_hi) ? item.colors_hi : (item.colors || '—');
+  const displayMaterial = (isHi && item.material_hi) ? item.material_hi : (item.material || '—');
+  const gallery = Array.isArray(item.images) && item.images.length ? item.images : [item.image].filter(Boolean);
+  const stats = ratingStats(item.id);
+  const reviews = reviewsForProduct(item.id);
+  const orders = allPastOrders.filter(o => String(o.productId) === String(item.id));
+  const waMsg = encodeURIComponent(`${isHi ? 'नमस्ते, मुझे इसमें रुचि है' : 'Hi, I am interested in'}: ${item.name}`);
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-gallery">
+      <div class="detail-gallery-main" id="detail-main-img-wrap" onclick='openLightbox(${JSON.stringify(gallery)}, 0)'>
+        <img id="detail-main-img" src="${gallery[0] || 'https://placeholder.pics/svg/300x200'}" alt="${displayName}">
+      </div>
+      ${gallery.length > 1 ? `<div class="detail-gallery-thumbs">${gallery.map((src, i) => `<img src="${src}" class="${i===0?'active':''}" onclick="setDetailImage(this, '${src.replace(/'/g,"\\'")}')" alt="thumb ${i+1}">`).join('')}</div>` : ''}
+    </div>
+    <div class="detail-info">
+      <h2>${displayName}</h2>
+      ${stats.count ? `<div style="margin-bottom:14px;">${starRatingHTML(stats.avg, stats.count)} <span style="font-size:11.5px;color:var(--muted);">${t.reviews_based_on(stats.count)}</span></div>` : ''}
+      <p class="detail-desc">${displayDesc}</p>
+      <div class="detail-specs">
+        <h4>${t.detail_specs_heading}</h4>
+        <div class="specs-table">
+          <div class="row"><span class="k">${t.spec_sizes}</span><span class="v">${displaySize}</span></div>
+          <div class="row"><span class="k">${t.spec_colors}</span><span class="v">${displayColors}</span></div>
+          <div class="row"><span class="k">${t.spec_material}</span><span class="v">${displayMaterial}</span></div>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <a href="#contact" class="btn btn-accent" onclick="closeProductDetail(); selectProduct('${(item.name||'').replace(/'/g,"\\'")}')"><i class="fa-solid fa-layer-group"></i> ${t.btn_get_quote}</a>
+        <a href="tel:+919811071627" class="btn-call-item" style="border:1px solid var(--line);"><i class="fa-solid fa-phone"></i> ${t.btn_call}</a>
+        <a href="https://wa.me/919811071627?text=${waMsg}" target="_blank" rel="noopener" class="btn-wa-item"><i class="fa-brands fa-whatsapp"></i> ${t.btn_whatsapp}</a>
+      </div>
+
+      ${orders.length ? `
+      <div class="detail-section">
+        <h4><i class="fa-solid fa-truck-fast" style="color:var(--steel)"></i> ${t.past_orders_heading}</h4>
+        ${orders.map(o => `
+          <div class="past-order-item">
+            <span class="po-buyer">${o.buyerName}</span>
+            <span class="po-meta">${[o.quantity, o.date].filter(Boolean).join(' · ')}</span>
+          </div>
+        `).join('')}
+      </div>` : ''}
+
+      <div class="detail-section">
+        <h4><i class="fa-solid fa-star" style="color:var(--safety)"></i> ${t.reviews_heading}</h4>
+        ${reviews.length ? reviews.map(r => `
+          <div class="review-item">
+            <div class="review-head">
+              <span class="reviewer-name">${r.reviewerName}${r.companyName ? `<span class="review-company"> · ${r.companyName}</span>` : ''}</span>
+              <span class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+            </div>
+            <p class="review-text">${(isHi && r.text_hi) ? r.text_hi : r.text}</p>
+          </div>
+        `).join('') : `<p class="empty-note">${t.reviews_none}</p>`}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detail-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.setDetailImage = function(thumbEl, src){
+  document.getElementById('detail-main-img').src = src;
+  document.querySelectorAll('.detail-gallery-thumbs img').forEach(el => el.classList.remove('active'));
+  thumbEl.classList.add('active');
+};
+
+window.closeProductDetail = function(){
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+/* ====================== TESTIMONIALS (general, company-wide reviews) ====================== */
+function renderTestimonials(){
+  const t = translations[currentLang];
+  const isHi = currentLang === 'hi';
+  const wrapper = document.getElementById('testimonials-container');
+  if(!wrapper) return;
+
+  const general = allReviews.filter(r => !r.productId);
+  if(!general.length){
+    wrapper.innerHTML = `<p class="empty-note">${t.testimonials_none}</p>`;
+    return;
+  }
+
+  wrapper.innerHTML = general.map(r => `
+    <div class="testimonial-card">
+      <span class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+      <p class="t-text">"${(isHi && r.text_hi) ? r.text_hi : r.text}"</p>
+      <div class="t-name">${r.reviewerName}</div>
+      ${r.companyName ? `<div class="t-company">${r.companyName}</div>` : ''}
+    </div>
+  `).join('');
+}
 
 function selectProduct(name){
   const dropdown = document.getElementById('product');
@@ -977,7 +1193,7 @@ window.addEventListener('scroll', function(){
    navigation and the mobile menu, so pressing back moves to the
    previous section/state inside the site instead of exiting it. */
 (function initBackNavigation(){
-  const sectionIds = ['home','process','products','why-us','contact'];
+  const sectionIds = ['home','process','products','why-us','testimonials','contact'];
   let navigating = false;
 
   function currentSectionFromScroll(){
@@ -1023,6 +1239,13 @@ window.addEventListener('scroll', function(){
     const lightbox = document.getElementById('lightbox-overlay');
     if(lightbox && lightbox.classList.contains('open')){
       closeLightbox();
+      history.pushState({ trap:true, section: currentSectionFromScroll() }, '', location.hash || '#');
+      return;
+    }
+    // Then the product detail modal, if open.
+    const detail = document.getElementById('detail-overlay');
+    if(detail && detail.classList.contains('open')){
+      closeProductDetail();
       history.pushState({ trap:true, section: currentSectionFromScroll() }, '', location.hash || '#');
       return;
     }
