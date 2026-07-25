@@ -126,7 +126,7 @@
             <h2><i class="fa-solid fa-lock"></i> Payal Admin Access</h2>
             <div id="errMsg">Invalid Password!</div>
             <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password !!">
+            <input type="password" id="password" placeholder="Password">
             <button class="btn-login" onclick="validateLogin()">Login to Dashboard</button>
         </div>
     </div>
@@ -253,6 +253,87 @@
                         </table>
                     </div>
                 </div>
+
+                <div class="card">
+                    <h2><i class="fa-solid fa-star"></i> Customer Reviews</h2>
+                    <form id="reviewForm" style="margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:20px;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Reviewer Name</label>
+                                <input type="text" id="rv_name" placeholder="e.g. Ramesh Gupta" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Company (optional)</label>
+                                <input type="text" id="rv_company" placeholder="e.g. Gupta Whiteboards Pvt Ltd">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Rating</label>
+                            <div id="rv_star_picker" style="font-size:24px; color:var(--line); cursor:pointer; letter-spacing:4px;"></div>
+                            <input type="hidden" id="rv_rating" value="5">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Applies to (optional — leave as "General" for a company-wide testimonial)</label>
+                            <select id="rv_product"><option value="">General / Company-wide</option></select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Review Text (English)</label>
+                            <textarea id="rv_text" rows="2" placeholder="What did the client say?" required></textarea>
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Review Text (Hindi — auto-filled if left blank)</label>
+                            <textarea id="rv_text_hi" rows="2" placeholder="हिंदी में समीक्षा (खाली छोड़ें तो अपने आप भर जाएगी)"></textarea>
+                        </div>
+                        <button type="submit" class="btn-add">Add Review</button>
+                    </form>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Reviewer</th><th>Rating</th><th>Applies To</th><th>Review</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="reviews-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><i class="fa-solid fa-truck-fast"></i> Past Bulk Orders (trust highlights)</h2>
+                    <form id="orderForm" style="margin-bottom:20px; border-bottom:1px solid var(--line); padding-bottom:20px;">
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Product</label>
+                            <select id="po_product" required><option value="">Select a product</option></select>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Buyer / Company Name</label>
+                                <input type="text" id="po_buyer" placeholder="e.g. ABC Whiteboards" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Quantity</label>
+                                <input type="text" id="po_qty" placeholder="e.g. 10,000 units">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Date (optional)</label>
+                                <input type="text" id="po_date" placeholder="e.g. March 2026">
+                            </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Note (optional)</label>
+                                <input type="text" id="po_note" placeholder="e.g. Repeat bulk order">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-add">Add Past Order</button>
+                    </form>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Product</th><th>Buyer</th><th>Quantity</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="orders-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -287,6 +368,12 @@
                 delete_fail: "Could not delete. Please try again.",
                 delete_query_confirm: "Delete this inquiry?",
                 delete_product_confirm: "Remove this product from the live catalog?",
+                review_added: "Review added and is now live!",
+                review_save_error: "Could not save the review. Please try again.",
+                review_delete_confirm: "Delete this review?",
+                order_added: "Past order added to the product page!",
+                order_save_error: "Could not save. Please try again.",
+                order_delete_confirm: "Delete this past order entry?",
                 translate_done: "Hindi translation filled in — review it and publish.",
                 translate_fail: "Auto-translate is having trouble right now. You can fill Hindi fields manually.",
                 translate_need_text: "Fill in the English fields first, then auto-translate.",
@@ -311,6 +398,12 @@
                 delete_fail: "डिलीट नहीं हो सका। कृपया फिर से कोशिश करें।",
                 delete_query_confirm: "क्या इस इनक्वायरी को हटाना है?",
                 delete_product_confirm: "क्या इस प्रोडक्ट को लाइव कैटलॉग से हटाना है?",
+                review_added: "समीक्षा जोड़ दी गई है और अब लाइव है!",
+                review_save_error: "समीक्षा सेव नहीं हो सकी। कृपया फिर से कोशिश करें।",
+                review_delete_confirm: "क्या इस समीक्षा को हटाना है?",
+                order_added: "पिछला ऑर्डर प्रोडक्ट पेज पर जोड़ दिया गया है!",
+                order_save_error: "सेव नहीं हो सका। कृपया फिर से कोशिश करें।",
+                order_delete_confirm: "क्या इस पिछले ऑर्डर एंट्री को हटाना है?",
                 translate_done: "हिंदी अनुवाद भर दिया गया है — जांचकर पब्लिश करें।",
                 translate_fail: "अभी ऑटो-ट्रांसलेट में दिक्कत आ रही है। आप हिंदी फ़ील्ड खुद भी भर सकते हैं।",
                 translate_need_text: "पहले अंग्रेज़ी फ़ील्ड भरें, फिर ऑटो-ट्रांसलेट करें।",
@@ -672,7 +765,177 @@
             } catch(err) {
                 pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444">Could not load products.</td></tr>';
             }
+
+            populateProductDropdowns();
+            await loadReviewsAndOrders();
         }
+
+        function populateProductDropdowns(){
+            const options = productsCache.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            const rvSelect = document.getElementById('rv_product');
+            const poSelect = document.getElementById('po_product');
+            const rvCurrent = rvSelect.value;
+            const poCurrent = poSelect.value;
+            rvSelect.innerHTML = '<option value="">General / Company-wide</option>' + options;
+            poSelect.innerHTML = '<option value="">Select a product</option>' + options;
+            if(rvCurrent) rvSelect.value = rvCurrent;
+            if(poCurrent) poSelect.value = poCurrent;
+        }
+
+        function productNameById(id){
+            const p = productsCache.find(p => String(p.id) === String(id));
+            return p ? p.name : null;
+        }
+
+        /* ---------- Star rating picker (Add Review form) ---------- */
+        function renderStarPicker(){
+            const wrap = document.getElementById('rv_star_picker');
+            const current = Number(document.getElementById('rv_rating').value) || 5;
+            wrap.innerHTML = [1,2,3,4,5].map(i => `<i class="fa-solid fa-star" data-star="${i}" style="color:${i <= current ? 'var(--safety)' : 'var(--line)'}"></i>`).join('');
+            wrap.querySelectorAll('[data-star]').forEach(star => {
+                star.addEventListener('click', () => {
+                    document.getElementById('rv_rating').value = star.getAttribute('data-star');
+                    renderStarPicker();
+                });
+            });
+        }
+        renderStarPicker();
+
+        /* ---------- Reviews & Past Orders: load + render ---------- */
+        async function loadReviewsAndOrders(){
+            const rBody = document.getElementById('reviews-table-body');
+            rBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted)">Loading...</td></tr>';
+            try {
+                const res = await fetch('/api/reviews');
+                const reviews = res.ok ? await res.json() : [];
+                rBody.innerHTML = '';
+                if(reviews.length === 0){
+                    rBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted)">No reviews yet.</td></tr>';
+                } else {
+                    reviews.slice().reverse().forEach(r => {
+                        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                        const appliesTo = r.productId ? (productNameById(r.productId) || 'Deleted product') : 'General';
+                        rBody.innerHTML += `<tr>
+                            <td><strong>${r.reviewerName}</strong>${r.companyName ? `<br><span style="font-size:11px; color:var(--muted)">${r.companyName}</span>` : ''}</td>
+                            <td style="color:var(--safety); letter-spacing:1px;">${stars}</td>
+                            <td style="font-size:12px;">${appliesTo}</td>
+                            <td style="font-size:12px; max-width:220px;">${r.text}</td>
+                            <td><button class="delete-btn" onclick="deleteReview(${r.id})"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>`;
+                    });
+                }
+            } catch(err) {
+                rBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444">Could not load reviews.</td></tr>';
+            }
+
+            const oBody = document.getElementById('orders-table-body');
+            oBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted)">Loading...</td></tr>';
+            try {
+                const res = await fetch('/api/orders');
+                const orders = res.ok ? await res.json() : [];
+                oBody.innerHTML = '';
+                if(orders.length === 0){
+                    oBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted)">No past orders added yet.</td></tr>';
+                } else {
+                    orders.slice().reverse().forEach(o => {
+                        oBody.innerHTML += `<tr>
+                            <td style="font-size:12px;">${productNameById(o.productId) || 'Deleted product'}</td>
+                            <td style="font-size:12px;">${o.buyerName}${o.date ? `<br><span style="color:var(--muted); font-size:11px;">${o.date}</span>` : ''}</td>
+                            <td style="font-size:12px;">${o.quantity || '—'}</td>
+                            <td><button class="delete-btn" onclick="deletePastOrder(${o.id})"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>`;
+                    });
+                }
+            } catch(err) {
+                oBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444">Could not load past orders.</td></tr>';
+            }
+        }
+
+        document.getElementById('reviewForm').addEventListener('submit', async function(e){
+            e.preventDefault();
+            const submitBtn = this.querySelector('.btn-add');
+            const originalLabel = submitBtn.innerText;
+            submitBtn.innerText = t('translating');
+
+            const reviewData = {
+                reviewerName: document.getElementById('rv_name').value,
+                companyName: document.getElementById('rv_company').value,
+                rating: document.getElementById('rv_rating').value,
+                productId: document.getElementById('rv_product').value || null,
+                text: document.getElementById('rv_text').value,
+                text_hi: document.getElementById('rv_text_hi').value
+            };
+
+            if(!reviewData.text_hi.trim() && reviewData.text.trim()){
+                const results = await translateTexts([reviewData.text]);
+                if(results && results[0]) reviewData.text_hi = results[0];
+            }
+
+            submitBtn.innerText = "Saving...";
+            try {
+                const res = await fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reviewData)
+                });
+                if(!res.ok) throw new Error('Failed');
+                showAdminToast(t('review_added'), 'success');
+                this.reset();
+                document.getElementById('rv_rating').value = 5;
+                renderStarPicker();
+                loadReviewsAndOrders();
+            } catch(err) {
+                showAdminToast(t('review_save_error'), 'error');
+            } finally {
+                submitBtn.innerText = originalLabel;
+            }
+        });
+
+        window.deleteReview = async function(id){
+            const confirmed = await showAdminConfirm(t('review_delete_confirm'));
+            if(!confirmed) return;
+            try {
+                await fetch(`/api/reviews?id=${id}`, { method: 'DELETE' });
+                loadReviewsAndOrders();
+            } catch(err) {
+                showAdminToast(t('delete_fail'), 'error');
+            }
+        };
+
+        document.getElementById('orderForm').addEventListener('submit', async function(e){
+            e.preventDefault();
+            const orderData = {
+                productId: document.getElementById('po_product').value,
+                buyerName: document.getElementById('po_buyer').value,
+                quantity: document.getElementById('po_qty').value,
+                date: document.getElementById('po_date').value,
+                note: document.getElementById('po_note').value
+            };
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                if(!res.ok) throw new Error('Failed');
+                showAdminToast(t('order_added'), 'success');
+                this.reset();
+                loadReviewsAndOrders();
+            } catch(err) {
+                showAdminToast(t('order_save_error'), 'error');
+            }
+        });
+
+        window.deletePastOrder = async function(id){
+            const confirmed = await showAdminConfirm(t('order_delete_confirm'));
+            if(!confirmed) return;
+            try {
+                await fetch(`/api/orders?id=${id}`, { method: 'DELETE' });
+                loadReviewsAndOrders();
+            } catch(err) {
+                showAdminToast(t('delete_fail'), 'error');
+            }
+        };
 
         document.getElementById('productForm').addEventListener('submit', async function(e) {
             e.preventDefault();
