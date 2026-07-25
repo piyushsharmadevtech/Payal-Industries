@@ -12,6 +12,7 @@
             --ink:#14213d; --steel:#2f5d78; --steel-dark:#1f4156; --safety:#ff5722;
             --paper:#f3f4ef; --surface:#ffffff; --surface-2:#f8f9f5; --line:#dadfd6; --muted:#5b6770;
             --shadow:0 10px 30px rgba(20,33,61,0.06); --radius:10px;
+            --chip-dark:#14213d; /* always dark, unlike --ink which flips per theme — safe for badges that need white text on top */
         }
         html[data-theme="dark"]{
             --ink:#edefea; --steel:#6fb3e0; --steel-dark:#3a7ca5; --safety:#ff8255;
@@ -87,7 +88,7 @@
 
         /* ---------- Polished toast + confirm modal (replaces native alert/confirm) ---------- */
         #admin-toast-stack{ position:fixed; bottom:24px; right:24px; z-index:99999; display:flex; flex-direction:column; gap:10px; max-width:340px; }
-        .admin-toast{ background:var(--ink); color:#fff; padding:14px 16px; border-radius:9px; font-size:13.5px; box-shadow:0 10px 28px rgba(0,0,0,.28); display:flex; align-items:flex-start; gap:11px; transform:translateX(130%); transition:transform .35s cubic-bezier(.2,.9,.3,1); line-height:1.45; }
+        .admin-toast{ background:var(--chip-dark); color:#fff; padding:14px 16px; border-radius:9px; font-size:13.5px; box-shadow:0 10px 28px rgba(0,0,0,.28); display:flex; align-items:flex-start; gap:11px; transform:translateX(130%); transition:transform .35s cubic-bezier(.2,.9,.3,1); line-height:1.45; }
         .admin-toast.show{ transform:translateX(0); }
         .admin-toast i{ font-size:15px; margin-top:1px; flex:none; }
         .admin-toast.success i{ color:#4ade80; }
@@ -124,8 +125,8 @@
         <div class="login-card">
             <h2><i class="fa-solid fa-lock"></i> Payal Admin Access</h2>
             <div id="errMsg">Invalid Password!</div>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="username" placeholder="Username (admin)">
+            <input type="password" id="password" placeholder="Password (payal123)">
             <button class="btn-login" onclick="validateLogin()">Login to Dashboard</button>
         </div>
     </div>
@@ -530,7 +531,7 @@
                 <div style="position:relative;">
                     <img src="${url}" style="width:64px; height:56px; object-fit:cover; border-radius:6px; border:2px solid ${i===0 ? 'var(--safety)' : 'var(--line)'};">
                     ${i===0 ? '<span style="position:absolute; bottom:-6px; left:2px; background:var(--safety); color:#fff; font-size:9px; padding:1px 5px; border-radius:4px;">Cover</span>' : ''}
-                    <button type="button" onclick="removeProductImage(${i})" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--ink); color:#fff; border:none; font-size:10px; cursor:pointer; line-height:1;">✕</button>
+                    <button type="button" onclick="removeProductImage(${i})" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:var(--chip-dark); color:#fff; border:none; font-size:10px; cursor:pointer; line-height:1;">✕</button>
                 </div>
             `).join('');
         }
@@ -622,8 +623,17 @@
                     qBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--muted)">No inquires received.</td></tr>';
                 } else {
                     queries.slice().reverse().forEach(q => {
+                        const cleanPhone = (q.phone || '').replace(/[^0-9+]/g, '');
                         qBody.innerHTML += `<tr>
-                            <td><strong>${q.name}</strong><br><span style="color:var(--steel)">${q.phone}</span></td>
+                            <td>
+                                <strong>${q.name}</strong><br>
+                                <span style="color:var(--steel)">${q.phone}</span>
+                                ${cleanPhone ? `
+                                    <div style="display:flex; gap:6px; margin-top:6px;">
+                                        <a href="tel:${cleanPhone}" style="display:inline-flex; align-items:center; gap:5px; background:var(--steel); color:#fff; padding:5px 10px; border-radius:5px; font-size:11.5px; font-weight:600; text-decoration:none;"><i class="fa-solid fa-phone"></i> Call</a>
+                                        <a href="https://wa.me/${cleanPhone.replace('+','')}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:5px; background:#25D366; color:#fff; padding:5px 10px; border-radius:5px; font-size:11.5px; font-weight:600; text-decoration:none;"><i class="fa-brands fa-whatsapp"></i> Chat</a>
+                                    </div>` : ''}
+                            </td>
                             <td><small><strong>Category:</strong> ${q.product}</small><br><p style="font-size:12px;margin-top:4px;">${q.message}</p></td>
                             <td><button class="delete-btn" onclick="deleteQuery(${q.id})">Delete</button></td>
                         </tr>`;
@@ -647,7 +657,7 @@
                         pBody.innerHTML += `<tr>
                             <td style="position:relative;">
                                 <img class="img-preview" src="${p.image || 'https://placeholder.pics/svg/50'}" alt="img">
-                                ${Array.isArray(p.images) && p.images.length > 1 ? `<span style="position:absolute; bottom:0; right:0; background:var(--ink); color:#fff; font-size:9px; padding:1px 4px; border-radius:4px; font-family:var(--font-mono);">${p.images.length}</span>` : ''}
+                                ${Array.isArray(p.images) && p.images.length > 1 ? `<span style="position:absolute; bottom:0; right:0; background:var(--chip-dark); color:#fff; font-size:9px; padding:1px 4px; border-radius:4px; font-family:var(--font-mono);">${p.images.length}</span>` : ''}
                             </td>
                             <td><strong>${p.name}</strong> ${p.name_hi ? '<span style="font-size:10px; background:var(--steel); color:#fff; padding:2px 6px; border-radius:4px; margin-left:4px;">हिं</span>' : ''}<br><span style="font-size:11px;color:var(--muted)">${p.size} | ${p.colors}</span></td>
                             <td>
