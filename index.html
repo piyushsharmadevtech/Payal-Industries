@@ -290,9 +290,11 @@
   .contact-details-list li{ display:flex; gap:14px; margin-bottom:20px; }
   .contact-details-list i{ color:var(--steel); font-size:17px; margin-top:3px; width:18px; }
   .contact-details-list strong{ display:block; font-size:13px; color:var(--muted); margin-bottom:2px; }
-  .map-frame{ border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:20px; height:160px; filter:grayscale(0.15); }
+  .map-frame{ border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:20px; height:160px; filter:grayscale(0.15); cursor:pointer; }
   html[data-theme="dark"] .map-frame{ filter:grayscale(.4) invert(.92) hue-rotate(180deg); }
-  .map-frame iframe{ width:100%; height:100%; border:0; }
+  .map-frame iframe{ width:100%; height:100%; border:0; pointer-events:none; }
+  .btn-directions{ display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px; padding:11px; background:var(--steel); color:#fff; text-decoration:none; border-radius:7px; font-weight:600; font-size:13.5px; transition:filter .2s ease; }
+  .btn-directions:hover{ filter:brightness(1.08); }
 
   footer{ background:var(--chip-dark); color:#dfe4ea; padding:46px 24px 26px; margin-top:0; }
   .footer-inner{ max-width:1240px; margin:0 auto; display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap; padding-bottom:26px; border-bottom:1px solid rgba(255,255,255,.12); }
@@ -583,9 +585,12 @@
         <li><i class="fa-solid fa-envelope"></i><div><strong data-i18n="office_email_label">Email</strong>info@payalindustries.com</div></li>
         <li><i class="fa-solid fa-clock"></i><div><strong data-i18n="office_hours_label">Working Hours</strong><span data-i18n="office_hours_value">Mon–Sat, 9:30 AM – 7:00 PM</span></div></li>
       </ul>
-      <div class="map-frame">
-        <iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=77.250%2C28.695%2C77.290%2C28.720&layer=mapnik" title="Factory location map"></iframe>
+      <div class="map-frame" id="factory-map-frame" onclick="window.open('https://www.google.com/maps/dir/?api=1&amp;destination=28.7166576,77.2631912', '_blank')">
+        <iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=77.2482%2C28.7017%2C77.2782%2C28.7317&layer=mapnik&marker=28.7166576%2C77.2631912" title="Factory location map"></iframe>
       </div>
+      <a href="https://www.google.com/maps/dir/?api=1&amp;destination=28.7166576,77.2631912" target="_blank" rel="noopener" class="btn-directions">
+        <i class="fa-solid fa-diamond-turn-right"></i> <span data-i18n="get_directions">Get Directions</span>
+      </a>
     </div>
   </div>
 </section>
@@ -673,6 +678,7 @@ const translations = {
     form_cat_corners:"Whiteboard Corner Joints (All Types)", form_cat_dusters:"Whiteboard Dusters (All Types)", form_cat_custom:"Custom Design Components",
     office_factory_label:"Factory", office_phone_label:"Phone", office_email_label:"Email",
     office_hours_label:"Working Hours", office_hours_value:"Mon–Sat, 9:30 AM – 7:00 PM",
+    get_directions:"Get Directions",
     footer_tagline:"Direct B2B manufacturer of custom plastic whiteboard components, supplying brands across India.",
     footer_quick_links:"QUICK LINKS", footer_rights:"All Rights Reserved.", footer_made:"Crafted for direct factory-to-brand supply.",
     toast_success:"Inquiry sent! Our team will contact you shortly.",
@@ -725,6 +731,7 @@ const translations = {
     form_cat_corners:"व्हाइटबोर्ड कॉर्नर जॉइंट (सभी प्रकार)", form_cat_dusters:"व्हाइटबोर्ड डस्टर (सभी प्रकार)", form_cat_custom:"कस्टम डिज़ाइन कंपोनेंट्स",
     office_factory_label:"फैक्ट्री", office_phone_label:"फ़ोन", office_email_label:"ईमेल",
     office_hours_label:"कार्य समय", office_hours_value:"सोम–शनि, सुबह 9:30 – शाम 7:00",
+    get_directions:"दिशा-निर्देश पाएं",
     footer_tagline:"पूरे भारत में ब्रांड्स को सीधे सप्लाई करने वाला कस्टम प्लास्टिक व्हाइटबोर्ड कंपोनेंट निर्माता।",
     footer_quick_links:"क्विक लिंक्स", footer_rights:"सर्वाधिकार सुरक्षित।", footer_made:"फैक्ट्री-टू-ब्रांड सीधी सप्लाई के लिए बनाया गया।",
     toast_success:"इनक्वायरी भेज दी गई! हमारी टीम शीघ्र ही संपर्क करेगी।",
