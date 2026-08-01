@@ -125,8 +125,8 @@
         <div class="login-card">
             <h2><i class="fa-solid fa-lock"></i> Payal Admin Access</h2>
             <div id="errMsg">Invalid Password!</div>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="username" placeholder="Username (admin)">
+            <input type="password" id="password" placeholder="Password (payal123)">
             <button class="btn-login" onclick="validateLogin()">Login to Dashboard</button>
         </div>
     </div>
@@ -284,7 +284,9 @@
                             <label><i class="fa-solid fa-language" style="color:var(--steel)"></i> Review Text (Hindi — auto-filled if left blank)</label>
                             <textarea id="rv_text_hi" rows="2" placeholder="हिंदी में समीक्षा (खाली छोड़ें तो अपने आप भर जाएगी)"></textarea>
                         </div>
-                        <button type="submit" class="btn-add">Add Review</button>
+                        <input type="hidden" id="edit_review_id" value="">
+                        <button type="submit" class="btn-add" id="rv_submit_text">Add Review</button>
+                        <button type="button" class="btn-cancel-edit" id="rv_btn_cancel" onclick="resetReviewForm()">Cancel Edit</button>
                     </form>
                     <div style="overflow-x: auto;">
                         <table>
@@ -348,6 +350,7 @@
 
         let productImages = [];
         let productsCache = [];
+        let reviewsCache = [];
 
         /* ====================== ADMIN LANGUAGE (follows the public site's toggle) ======================
            The public site stores the visitor's chosen language in localStorage('lang').
@@ -369,6 +372,7 @@
                 delete_query_confirm: "Delete this inquiry?",
                 delete_product_confirm: "Remove this product from the live catalog?",
                 review_added: "Review added and is now live!",
+                review_updated: "Review updated successfully!",
                 review_save_error: "Could not save the review. Please try again.",
                 review_delete_confirm: "Delete this review?",
                 order_added: "Past order added to the product page!",
@@ -399,6 +403,7 @@
                 delete_query_confirm: "क्या इस इनक्वायरी को हटाना है?",
                 delete_product_confirm: "क्या इस प्रोडक्ट को लाइव कैटलॉग से हटाना है?",
                 review_added: "समीक्षा जोड़ दी गई है और अब लाइव है!",
+                review_updated: "समीक्षा सफलतापूर्वक अपडेट हो गई है!",
                 review_save_error: "समीक्षा सेव नहीं हो सकी। कृपया फिर से कोशिश करें।",
                 review_delete_confirm: "क्या इस समीक्षा को हटाना है?",
                 order_added: "पिछला ऑर्डर प्रोडक्ट पेज पर जोड़ दिया गया है!",
@@ -808,6 +813,7 @@
             try {
                 const res = await fetch('/api/reviews');
                 const reviews = res.ok ? await res.json() : [];
+                reviewsCache = reviews;
                 rBody.innerHTML = '';
                 if(reviews.length === 0){
                     rBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted)">No reviews yet.</td></tr>';
@@ -820,7 +826,12 @@
                             <td style="color:var(--safety); letter-spacing:1px;">${stars}</td>
                             <td style="font-size:12px;">${appliesTo}</td>
                             <td style="font-size:12px; max-width:220px;">${r.text}</td>
-                            <td><button class="delete-btn" onclick="deleteReview(${r.id})"><i class="fa-solid fa-trash"></i></button></td>
+                            <td>
+                                <div class="action-btn-group">
+                                    <button class="edit-btn" onclick="startEditReview(${r.id})"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="delete-btn" onclick="deleteReview(${r.id})"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
                         </tr>`;
                     });
                 }
@@ -857,6 +868,7 @@
             const originalLabel = submitBtn.innerText;
             submitBtn.innerText = t('translating');
 
+            const editId = document.getElementById('edit_review_id').value;
             const reviewData = {
                 reviewerName: document.getElementById('rv_name').value,
                 companyName: document.getElementById('rv_company').value,
@@ -873,16 +885,20 @@
 
             submitBtn.innerText = "Saving...";
             try {
-                const res = await fetch('/api/reviews', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reviewData)
-                });
+                const res = editId
+                    ? await fetch(`/api/reviews?id=${editId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reviewData)
+                    })
+                    : await fetch('/api/reviews', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reviewData)
+                    });
                 if(!res.ok) throw new Error('Failed');
-                showAdminToast(t('review_added'), 'success');
-                this.reset();
-                document.getElementById('rv_rating').value = 5;
-                renderStarPicker();
+                showAdminToast(editId ? t('review_updated') : t('review_added'), 'success');
+                resetReviewForm();
                 loadReviewsAndOrders();
             } catch(err) {
                 showAdminToast(t('review_save_error'), 'error');
@@ -890,6 +906,31 @@
                 submitBtn.innerText = originalLabel;
             }
         });
+
+        window.startEditReview = function(id){
+            const r = reviewsCache.find(rv => String(rv.id) === String(id));
+            if(!r) return;
+            document.getElementById('edit_review_id').value = r.id;
+            document.getElementById('rv_name').value = r.reviewerName || '';
+            document.getElementById('rv_company').value = r.companyName || '';
+            document.getElementById('rv_rating').value = r.rating || 5;
+            document.getElementById('rv_product').value = r.productId || '';
+            document.getElementById('rv_text').value = r.text || '';
+            document.getElementById('rv_text_hi').value = r.text_hi || '';
+            renderStarPicker();
+            document.getElementById('rv_submit_text').innerText = "Update Review";
+            document.getElementById('rv_btn_cancel').style.display = 'block';
+            document.getElementById('reviewForm').scrollIntoView({ behavior:'smooth', block:'start' });
+        };
+
+        window.resetReviewForm = function(){
+            document.getElementById('reviewForm').reset();
+            document.getElementById('edit_review_id').value = '';
+            document.getElementById('rv_rating').value = 5;
+            renderStarPicker();
+            document.getElementById('rv_submit_text').innerText = "Add Review";
+            document.getElementById('rv_btn_cancel').style.display = 'none';
+        };
 
         window.deleteReview = async function(id){
             const confirmed = await showAdminConfirm(t('review_delete_confirm'));
