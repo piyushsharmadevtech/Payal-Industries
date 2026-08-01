@@ -290,7 +290,8 @@
   .contact-details-list li{ display:flex; gap:14px; margin-bottom:20px; }
   .contact-details-list i{ color:var(--steel); font-size:17px; margin-top:3px; width:18px; }
   .contact-details-list strong{ display:block; font-size:13px; color:var(--muted); margin-bottom:2px; }
-  .map-frame{ border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:20px; height:160px; filter:grayscale(0.15); cursor:pointer; }
+  .map-frame{ border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:20px; height:160px; filter:grayscale(0.15); cursor:zoom-in; transition:height .35s ease; }
+  .map-frame.expanded{ height:340px; cursor:zoom-out; }
   html[data-theme="dark"] .map-frame{ filter:grayscale(.4) invert(.92) hue-rotate(180deg); }
   .map-frame iframe{ width:100%; height:100%; border:0; pointer-events:none; }
   .btn-directions{ display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px; padding:11px; background:var(--steel); color:#fff; text-decoration:none; border-radius:7px; font-weight:600; font-size:13.5px; transition:filter .2s ease; }
@@ -585,7 +586,7 @@
         <li><i class="fa-solid fa-envelope"></i><div><strong data-i18n="office_email_label">Email</strong>info@payalindustries.com</div></li>
         <li><i class="fa-solid fa-clock"></i><div><strong data-i18n="office_hours_label">Working Hours</strong><span data-i18n="office_hours_value">Mon–Sat, 9:30 AM – 7:00 PM</span></div></li>
       </ul>
-      <div class="map-frame" id="factory-map-frame" onclick="window.open('https://www.google.com/maps/dir/?api=1&amp;destination=28.7166576,77.2631912', '_blank')">
+      <div class="map-frame" id="factory-map-frame" onclick="this.classList.toggle('expanded')">
         <iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=77.2482%2C28.7017%2C77.2782%2C28.7317&layer=mapnik&marker=28.7166576%2C77.2631912" title="Factory location map"></iframe>
       </div>
       <a href="https://www.google.com/maps/dir/?api=1&amp;destination=28.7166576,77.2631912" target="_blank" rel="noopener" class="btn-directions">
