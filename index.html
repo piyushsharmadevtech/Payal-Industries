@@ -387,6 +387,7 @@
         <li><a href="#" data-i18n="nav_home">Home</a></li>
         <li><a href="#products" data-i18n="nav_products">Our Products</a></li>
         <li><a href="#process" data-i18n="nav_process">Process</a></li>
+        <li><a href="#testimonials" data-i18n="nav_reviews">Reviews</a></li>
         <li><a href="#contact" data-i18n="nav_contact">Contact Us</a></li>
         <li><a href="admin.html" class="admin-link"><i class="fa-solid fa-lock"></i> <span data-i18n="nav_admin">Admin</span></a></li>
       </ul>
@@ -412,6 +413,7 @@
       <li><a href="#" data-i18n="nav_home" onclick="closeMobileMenu()">Home</a></li>
       <li><a href="#products" data-i18n="nav_products" onclick="closeMobileMenu()">Our Products</a></li>
       <li><a href="#process" data-i18n="nav_process" onclick="closeMobileMenu()">Process</a></li>
+      <li><a href="#testimonials" data-i18n="nav_reviews" onclick="closeMobileMenu()">Reviews</a></li>
       <li><a href="#contact" data-i18n="nav_contact" onclick="closeMobileMenu()">Contact Us</a></li>
       <li><a href="admin.html"><i class="fa-solid fa-lock"></i> <span data-i18n="nav_admin">Admin</span></a></li>
     </ul>
@@ -626,7 +628,7 @@
 const translations = {
   en: {
     logo_tag:"EST.1996 - Trusted Since 1996",
-    nav_home:"Home", nav_products:"Our Products", nav_process:"Process", nav_contact:"Contact Us", nav_admin:"Admin", nav_quote_btn:"Get a Quote",
+    nav_home:"Home", nav_products:"Our Products", nav_process:"Process", nav_reviews:"Reviews", nav_contact:"Contact Us", nav_admin:"Admin", nav_quote_btn:"Get a Quote",
     hero_eyebrow:"B2B MANUFACTURER · DELHI, INDIA",
     hero_title:'Precision-Molded Whiteboard Components, <span>Built to Your Spec.</span>',
     hero_sub:"Direct factory supply of custom plastic corner joints and dusters for whiteboard brands — exact sizes, exact colors, no middlemen.",
@@ -678,7 +680,7 @@ const translations = {
   },
   hi: {
     logo_tag:"स्थापितः 1996 - 1996 से विश्वसनीय",
-    nav_home:"होम", nav_products:"उत्पाद", nav_process:"प्रक्रिया", nav_contact:"संपर्क करें", nav_admin:"एडमिन", nav_quote_btn:"कोटेशन लें",
+    nav_home:"होम", nav_products:"उत्पाद", nav_process:"प्रक्रिया", nav_reviews:"समीक्षाएं", nav_contact:"संपर्क करें", nav_admin:"एडमिन", nav_quote_btn:"कोटेशन लें",
     hero_eyebrow:"बी2बी निर्माता · दिल्ली, भारत",
     hero_title:'सटीक माप वाले प्लास्टिक व्हाइटबोर्ड कंपोनेंट्स, <span>आपकी ज़रूरत के अनुसार।</span>',
     hero_sub:"व्हाइटबोर्ड ब्रांड्स के लिए कस्टम कॉर्नर जॉइंट और डस्टर — सीधे फैक्ट्री से, सही साइज़ और सही रंग में, बिना किसी बिचौलिए के।",
@@ -807,6 +809,18 @@ function categoryOf(name){
   return 'custom';
 }
 
+/* Escapes text for safe use inside HTML/attribute contexts — protects against
+   product names/descriptions containing quotes (e.g. 4" Corner) breaking the
+   surrounding markup and corrupting the rest of the catalog render. */
+function escapeHtml(str){
+  return (str || '').toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /* ====================== PRODUCTS ====================== */
 let allProducts = [];
 let allReviews = [];
@@ -899,33 +913,54 @@ function renderProducts(){
   const isHi = currentLang === 'hi';
   const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
-  filtered.forEach((item, idx)=>{
+  const cardsHtml = filtered.map((item, idx)=>{
     const displayName = (isHi && item.name_hi) ? item.name_hi : item.name;
     const isNew = item.id && Number(item.id) > oneWeekAgo;
     const waMsg = encodeURIComponent(`${isHi ? 'नमस्ते, मुझे इसमें रुचि है' : 'Hi, I am interested in'}: ${item.name}`);
     const stats = ratingStats(item.id);
+    const safeName = escapeHtml(displayName);
 
-    wrapper.innerHTML += `
+    return `
       <div class="product-card">
-        <div class="product-img-wrap" onclick="openProductDetail('${item.id}')">
-          <img src="${item.image || 'https://placeholder.pics/svg/300x200'}" alt="${displayName}" loading="lazy">
+        <div class="product-img-wrap" data-open-detail="${item.id}">
+          <img src="${item.image || 'https://placeholder.pics/svg/300x200'}" alt="${safeName}" loading="lazy">
           <span class="spec-tag mono">SPEC-${String(idx+1).padStart(3,'0')}</span>
           ${isNew ? `<span class="new-badge">${t.badge_new}</span>` : ''}
         </div>
         <div class="product-info">
-          <div class="product-title" onclick="openProductDetail('${item.id}')">${displayName}</div>
+          <div class="product-title" data-open-detail="${item.id}">${safeName}</div>
           <div class="product-rating-row">${stats.count ? starRatingHTML(stats.avg, stats.count) : ''}</div>
           <div class="product-actions">
-            <a href="#contact" class="btn-query-item" onclick="event.stopPropagation(); selectProduct('${(item.name||'').replace(/'/g,"\\'")}')">${t.btn_get_quote}</a>
+            <a href="#contact" class="btn-query-item" data-select-quote="${item.id}">${t.btn_get_quote}</a>
             <div class="product-actions-row">
-              <a href="tel:+919811071627" onclick="event.stopPropagation();" class="btn-call-item"><i class="fa-solid fa-phone"></i> ${t.btn_call}</a>
-              <a href="https://wa.me/919811071627?text=${waMsg}" target="_blank" rel="noopener" onclick="event.stopPropagation();" class="btn-wa-item"><i class="fa-brands fa-whatsapp"></i> ${t.btn_whatsapp}</a>
+              <a href="tel:+919811071627" class="btn-call-item"><i class="fa-solid fa-phone"></i> ${t.btn_call}</a>
+              <a href="https://wa.me/919811071627?text=${waMsg}" target="_blank" rel="noopener" class="btn-wa-item"><i class="fa-brands fa-whatsapp"></i> ${t.btn_whatsapp}</a>
             </div>
           </div>
         </div>
       </div>`;
   });
+
+  wrapper.innerHTML = cardsHtml.join('');
 }
+
+/* Single delegated click handler for the whole grid — avoids embedding raw
+   product text (which may contain quotes) inside inline onclick attributes,
+   which previously could corrupt the HTML of an entire re-render. */
+document.getElementById('product-container').addEventListener('click', function(e){
+  const quoteBtn = e.target.closest('[data-select-quote]');
+  if(quoteBtn){
+    e.preventDefault();
+    e.stopPropagation();
+    selectProductById(quoteBtn.getAttribute('data-select-quote'));
+    document.getElementById('contact').scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+  const detailTarget = e.target.closest('[data-open-detail]');
+  if(detailTarget){
+    openProductDetail(detailTarget.getAttribute('data-open-detail'));
+  }
+});
 
 function updateFilterCounts(all){
   const counts = { all: all.length, corners: 0, dusters: 0, custom: 0 };
@@ -980,7 +1015,7 @@ function renderLightboxFrame(){
   if(total > 1){
     thumbsWrap.style.display = 'flex';
     thumbsWrap.innerHTML = lightboxImages.map((src, i) =>
-      `<img src="${src}" class="${i === lightboxIndex ? 'active' : ''}" onclick="lightboxGoTo(${i})" alt="thumbnail ${i+1}">`
+      `<img src="${src}" class="${i === lightboxIndex ? 'active' : ''}" data-lightbox-thumb="${i}" alt="thumbnail ${i+1}">`
     ).join('');
     const activeThumb = thumbsWrap.children[lightboxIndex];
     if(activeThumb) activeThumb.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
@@ -989,6 +1024,11 @@ function renderLightboxFrame(){
     thumbsWrap.innerHTML = '';
   }
 }
+
+document.getElementById('lightbox-thumbs').addEventListener('click', function(e){
+  const thumb = e.target.closest('[data-lightbox-thumb]');
+  if(thumb) lightboxGoTo(Number(thumb.getAttribute('data-lightbox-thumb')));
+});
 
 window.lightboxGoTo = function(i){
   lightboxIndex = i;
@@ -1019,18 +1059,21 @@ document.addEventListener('keydown', function(e){
 })();
 
 /* ====================== PRODUCT DETAIL MODAL ====================== */
+let currentDetailGallery = [];
+
 window.openProductDetail = function(productId){
   const item = allProducts.find(p => String(p.id) === String(productId));
   if(!item) return;
 
   const t = translations[currentLang];
   const isHi = currentLang === 'hi';
-  const displayName = (isHi && item.name_hi) ? item.name_hi : item.name;
-  const displayDesc = (isHi && item.description_hi) ? item.description_hi : (item.description || '');
-  const displaySize = (isHi && item.size_hi) ? item.size_hi : (item.size || '—');
-  const displayColors = (isHi && item.colors_hi) ? item.colors_hi : (item.colors || '—');
-  const displayMaterial = (isHi && item.material_hi) ? item.material_hi : (item.material || '—');
+  const displayName = escapeHtml((isHi && item.name_hi) ? item.name_hi : item.name);
+  const displayDesc = escapeHtml((isHi && item.description_hi) ? item.description_hi : (item.description || ''));
+  const displaySize = escapeHtml((isHi && item.size_hi) ? item.size_hi : (item.size || '—'));
+  const displayColors = escapeHtml((isHi && item.colors_hi) ? item.colors_hi : (item.colors || '—'));
+  const displayMaterial = escapeHtml((isHi && item.material_hi) ? item.material_hi : (item.material || '—'));
   const gallery = Array.isArray(item.images) && item.images.length ? item.images : [item.image].filter(Boolean);
+  currentDetailGallery = gallery;
   const stats = ratingStats(item.id);
   const reviews = reviewsForProduct(item.id);
   const orders = allPastOrders.filter(o => String(o.productId) === String(item.id));
@@ -1038,10 +1081,10 @@ window.openProductDetail = function(productId){
 
   document.getElementById('detail-content').innerHTML = `
     <div class="detail-gallery">
-      <div class="detail-gallery-main" id="detail-main-img-wrap" onclick='openLightbox(${JSON.stringify(gallery)}, 0)'>
+      <div class="detail-gallery-main" id="detail-main-img-wrap" data-detail-lightbox="1">
         <img id="detail-main-img" src="${gallery[0] || 'https://placeholder.pics/svg/300x200'}" alt="${displayName}">
       </div>
-      ${gallery.length > 1 ? `<div class="detail-gallery-thumbs">${gallery.map((src, i) => `<img src="${src}" class="${i===0?'active':''}" onclick="setDetailImage(this, '${src.replace(/'/g,"\\'")}')" alt="thumb ${i+1}">`).join('')}</div>` : ''}
+      ${gallery.length > 1 ? `<div class="detail-gallery-thumbs">${gallery.map((src, i) => `<img src="${src}" class="${i===0?'active':''}" data-detail-thumb="${i}" alt="thumb ${i+1}">`).join('')}</div>` : ''}
     </div>
     <div class="detail-info">
       <h2>${displayName}</h2>
@@ -1056,7 +1099,7 @@ window.openProductDetail = function(productId){
         </div>
       </div>
       <div class="detail-actions">
-        <a href="#contact" class="btn btn-accent" onclick="closeProductDetail(); selectProduct('${(item.name||'').replace(/'/g,"\\'")}')"><i class="fa-solid fa-layer-group"></i> ${t.btn_get_quote}</a>
+        <a href="#contact" class="btn btn-accent" data-detail-quote="${item.id}"><i class="fa-solid fa-layer-group"></i> ${t.btn_get_quote}</a>
         <a href="tel:+919811071627" class="btn-call-item" style="border:1px solid var(--line);"><i class="fa-solid fa-phone"></i> ${t.btn_call}</a>
         <a href="https://wa.me/919811071627?text=${waMsg}" target="_blank" rel="noopener" class="btn-wa-item"><i class="fa-brands fa-whatsapp"></i> ${t.btn_whatsapp}</a>
       </div>
@@ -1066,8 +1109,8 @@ window.openProductDetail = function(productId){
         <h4><i class="fa-solid fa-truck-fast" style="color:var(--steel)"></i> ${t.past_orders_heading}</h4>
         ${orders.map(o => `
           <div class="past-order-item">
-            <span class="po-buyer">${o.buyerName}</span>
-            <span class="po-meta">${[o.quantity, o.date].filter(Boolean).join(' · ')}</span>
+            <span class="po-buyer">${escapeHtml(o.buyerName)}</span>
+            <span class="po-meta">${escapeHtml([o.quantity, o.date].filter(Boolean).join(' · '))}</span>
           </div>
         `).join('')}
       </div>` : ''}
@@ -1077,10 +1120,10 @@ window.openProductDetail = function(productId){
         ${reviews.length ? reviews.map(r => `
           <div class="review-item">
             <div class="review-head">
-              <span class="reviewer-name">${r.reviewerName}${r.companyName ? `<span class="review-company"> · ${r.companyName}</span>` : ''}</span>
+              <span class="reviewer-name">${escapeHtml(r.reviewerName)}${r.companyName ? `<span class="review-company"> · ${escapeHtml(r.companyName)}</span>` : ''}</span>
               <span class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
             </div>
-            <p class="review-text">${(isHi && r.text_hi) ? r.text_hi : r.text}</p>
+            <p class="review-text">${escapeHtml((isHi && r.text_hi) ? r.text_hi : r.text)}</p>
           </div>
         `).join('') : `<p class="empty-note">${t.reviews_none}</p>`}
       </div>
@@ -1090,6 +1133,25 @@ window.openProductDetail = function(productId){
   document.getElementById('detail-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 };
+
+document.getElementById('detail-content').addEventListener('click', function(e){
+  const quoteBtn = e.target.closest('[data-detail-quote]');
+  if(quoteBtn){
+    e.preventDefault();
+    closeProductDetail();
+    selectProductById(quoteBtn.getAttribute('data-detail-quote'));
+    document.getElementById('contact').scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
+  }
+  const thumb = e.target.closest('[data-detail-thumb]');
+  if(thumb){
+    setDetailImage(thumb, currentDetailGallery[Number(thumb.getAttribute('data-detail-thumb'))]);
+    return;
+  }
+  if(e.target.closest('[data-detail-lightbox]')){
+    openLightbox(currentDetailGallery, 0);
+  }
+});
 
 window.setDetailImage = function(thumbEl, src){
   document.getElementById('detail-main-img').src = src;
@@ -1118,9 +1180,9 @@ function renderTestimonials(){
   wrapper.innerHTML = general.map(r => `
     <div class="testimonial-card">
       <span class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
-      <p class="t-text">"${(isHi && r.text_hi) ? r.text_hi : r.text}"</p>
-      <div class="t-name">${r.reviewerName}</div>
-      ${r.companyName ? `<div class="t-company">${r.companyName}</div>` : ''}
+      <p class="t-text">"${escapeHtml((isHi && r.text_hi) ? r.text_hi : r.text)}"</p>
+      <div class="t-name">${escapeHtml(r.reviewerName)}</div>
+      ${r.companyName ? `<div class="t-company">${escapeHtml(r.companyName)}</div>` : ''}
     </div>
   `).join('');
 }
@@ -1131,6 +1193,11 @@ function selectProduct(name){
   if(cat === 'corners') dropdown.value = "Whiteboard Corners";
   else if(cat === 'dusters') dropdown.value = "Whiteboard Dusters";
   else dropdown.value = "Custom Injection Molding";
+}
+
+function selectProductById(id){
+  const item = allProducts.find(p => String(p.id) === String(id));
+  if(item) selectProduct(item.name);
 }
 
 /* Filter tabs */
